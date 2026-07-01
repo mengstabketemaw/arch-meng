@@ -1,37 +1,69 @@
-#            _
-#    _______| |__  _ __ ___
-#   |_  / __| '_ \| '__/ __|
-#  _ / /\__ \ | | | | | (__
-# (_)___|___/_| |_|_|  \___|
-#
-# -----------------------------------------------------
-# ML4W zshrc loader
-# -----------------------------------------------------
+# =====================================================
+#  ENVIRONMENT
+# =====================================================
+export EDITOR=nvim
+export PATH=$PATH:$HOME/.cargo/bin:$HOME/.local/bin
+export ZSH="$HOME/.oh-my-zsh"
+export PATH=/home/meng/.opencode/bin:$PATH
 
-# DON'T CHANGE THIS FILE
+# =====================================================
+#  OH-MY-ZSH PLUGINS
+# =====================================================
 
-# You can define your custom configuration by adding
-# files in ~/.config/zshrc
-# or by creating a folder ~/.config/zshrc/custom
-# with copies of files from ~/.config/zshrc
-# You can also create a .zshrc_custom file in your home directory
-# -----------------------------------------------------
+plugins=(
+    sudo                  # Double-Esc to prepend sudo
+    web-search            # google/wiki/yt query from terminal
+    zsh-autosuggestions   # History-based autosuggestions while typing
+    fast-syntax-highlighting  # Real-time syntax coloring
+    copyfile              # copyfile file.txt -> copies content to clipboard
+    copybuffer            # Ctrl-O copies current line to clipboard
+    dirhistory            # Alt-Left/Right to navigate dir history
+)
 
-# -----------------------------------------------------
-# Load modular configuration
-# -----------------------------------------------------
+source $ZSH/oh-my-zsh.sh
 
-for f in ~/.config/zshrc/*; do
-    if [ ! -d $f ]; then
-        c=`echo $f | sed -e "s=.config/zshrc=.config/zshrc/custom="`
-        [[ -f $c ]] && source $c || source $f
-    fi
-done
+# Ctrl-Space to accept autosuggestion
+bindkey '^ ' autosuggest-accept
 
-# -----------------------------------------------------
-# Load single customization file (if exists)
-# -----------------------------------------------------
+# =====================================================
+#  FUZZY FINDER (FZF)
+# =====================================================
 
-if [ -f ~/.zshrc_custom ]; then
-    source ~/.zshrc_custom
-fi
+source <(fzf --zsh)
+
+# =====================================================
+#  ZOXIDE (smart cd)
+# =====================================================
+
+eval "$(zoxide init zsh --cmd cd)"
+
+# =====================================================
+#  PROMPT (oh-my-posh)
+# =====================================================
+
+eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/zen.toml)"
+
+# =====================================================
+#  ALIASES
+# =====================================================
+
+# Utils
+alias c='clear'
+alias v='$EDITOR'
+alias vim='$EDITOR'
+alias shutdown='systemctl poweroff'
+alias wifi='nmtui'
+alias lock='hyprlock'
+alias clock='tty-clock'
+
+# Fastfetch
+alias ff='fastfetch'
+
+# Eza (ls replacement)
+alias ls='eza -a --icons=always'
+alias ll='eza -al --icons=always'
+alias lt='eza -a --tree --level=1 --icons=always'
+
+# System
+alias update-grub='sudo grub-mkconfig -o /boot/grub/grub.cfg'
+

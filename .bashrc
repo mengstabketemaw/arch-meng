@@ -36,6 +36,7 @@ if [ -f ~/.bashrc_custom ]; then
     source ~/.bashrc_custom
 fi
 
+export NVM_DIR="$HOME/.nvm"
 source /usr/share/nvm/init-nvm.sh
 
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
