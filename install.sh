@@ -28,6 +28,8 @@ mkdir -p "$HOME/.config"
 
 echo ":: Symlinking dotfiles..."
 ln -sf "$DOTFILES/.zshrc" "$HOME/.zshrc"
+ln -sf "$DOTFILES/.gtkrc-2.0" "$HOME/.gtkrc-2.0"
+ln -sf "$DOTFILES/.Xresources" "$HOME/.Xresources"
 for dir in "$DOTFILES/.config"/*/; do
     target="$HOME/.config/$(basename "$dir")"
     if [ -e "$target" ] && [ ! -L "$target" ]; then
