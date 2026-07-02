@@ -16,5 +16,5 @@ if [ -d $CACHE_FOLDER ]; then
     rm  -rf $CACHE_FOLDER
     mkdir -p $CACHE_FOLDER
     info "Restore Default Wallpaper"
-    $HOME/.config/hypr/scripts/wallpaper.sh $HOME/.config/hypr/assets/blank.png
+    $HOME/.config/hypr/scripts/wallpaper.sh $HOME/arch-setup/wallpapers/blank.png
 fi

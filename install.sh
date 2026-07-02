@@ -4,18 +4,18 @@ set -e
 DOTFILES="$HOME/arch-setup"
 
 echo ":: Installing packages..."
-sudo pacman -S --needed --noconfirm \
-    hyprland hyprlock hypridle hyprpaper \
-    quickshell waybar rofi kitty swaync \
-    cliphist playerctl awww matugen \
-    brightnessctl grim slurp swappy \
-    tesseract tesseract-data-eng \
-    btop blueman networkmanager \
-    pinta polkit-gnome \
-    qt6-base qt6-declarative qt6-svg qt6-wayland \
-    fcitx5 fcitx5-mozc \
-    xdg-desktop-portal-hyprland
-
+# sudo pacman -S --needed --noconfirm \
+#     hyprland hyprlock hypridle hyprpaper \
+#     quickshell waybar rofi kitty swaync \
+#     cliphist playerctl awww matugen \
+#     brightnessctl grim slurp swappy \
+#     tesseract tesseract-data-eng \
+#     btop blueman networkmanager \
+#     pinta polkit-gnome \
+#     qt6-base qt6-declarative qt6-svg qt6-wayland \
+#     fcitx5 fcitx5-mozc \
+#     xdg-desktop-portal-hyprland
+#
 if ! command -v grimblast &>/dev/null; then
     if command -v yay &>/dev/null; then
         yay -S --noconfirm grimblast-git
@@ -43,15 +43,15 @@ echo ":: Creating cache directory..."
 mkdir -p "$HOME/.cache/hyprland-dotfiles"
 
 echo ":: Generating initial colors from wallpaper..."
-if [ -f "$HOME/.config/hypr/assets/blank.png" ]; then
-    matugen image "$HOME/.config/hypr/assets/blank.png" 2>/dev/null || true
+if [ -f "$DOTFILES/wallpapers/blank.png" ]; then
+    matugen image "$DOTFILES/wallpapers/blank.png" 2>/dev/null || true
 fi
 
 echo ":: Setting up wallpaper..."
 if command -v awww &>/dev/null; then
     awww init 2>/dev/null || true
-    if [ -f "$HOME/.config/hypr/assets/blank.png" ]; then
-        awww img "$HOME/.config/hypr/assets/blank.png" 2>/dev/null || true
+    if [ -f "$DOTFILES/wallpapers/blank.png" ]; then
+        awww img "$DOTFILES/wallpapers/blank.png" 2>/dev/null || true
     fi
 fi
 

@@ -7,14 +7,14 @@ NOTIFICATIONS=false
 SKIP=false
 CACHE_FOLDER="$HOME/.cache/hyprland-dotfiles"
 CACHE_FILE="$CACHE_FOLDER/current_wallpaper"
-DEFAULT_WALLPAPER="$HOME/.config/hypr/assets/blank.png"
+DEFAULT_WALLPAPER="$HOME/arch-setup/wallpapers/blank.png"
 BLURRED_WALLPAPER="$CACHE_FOLDER/blurred_wallpaper.png"
 SQUARE_WALLPAPER="$CACHE_FOLDER/square_wallpaper.png"
 RASI_FILE="$CACHE_FOLDER/current_wallpaper.rasi"
 
 # Settings
 BLUR="50x30"
-WALLPAPER_FOLDER="$HOME/.config/hypr/assets"
+WALLPAPER_FOLDER="$HOME/arch-setup/wallpapers"
 EFFECT="off"
 TRANSITION_EFFECT="left"
 

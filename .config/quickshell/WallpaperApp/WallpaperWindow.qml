@@ -77,7 +77,7 @@ PanelWindow {
     }
 
     // Wallpaper folder
-    property string wallpaperFolder: "file://" + Quickshell.env("HOME") + "/.config/hypr/assets"
+    property string wallpaperFolder: "file://" + Quickshell.env("HOME") + "/arch-setup/wallpapers"
 
     // --- REUSABLE COMPONENTS ---
     component ML4WMenuItem: MenuItem {
@@ -200,7 +200,7 @@ PanelWindow {
                             text: "Reload Images"
                             onClicked: {
                                 root.wallpaperFolder = "";
-                                root.wallpaperFolder = "file://" + Quickshell.env("HOME") + "/.config/hypr/assets";
+                                root.wallpaperFolder = "file://" + Quickshell.env("HOME") + "/arch-setup/wallpapers";
                             } 
                         }
 

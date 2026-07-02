@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 WALLPAPER_APP="quickshell"
-WALLPAPER_FOLDER="$HOME/.config/hypr/assets"
+WALLPAPER_FOLDER="$HOME/arch-setup/wallpapers"
 
 # Colors for UI
 RED='\033[0;31m'
