@@ -11,6 +11,7 @@ PanelWindow {
     
     // --- 1. OVERLAY & WAYLAND FIXES ---
     WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.namespace: "power"
     exclusionMode: WlrLayershell.Ignore 
     
     implicitWidth: panelBg.width

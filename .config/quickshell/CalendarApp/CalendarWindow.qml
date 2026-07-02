@@ -12,6 +12,7 @@ PanelWindow {
     
     // --- WAYLAND CONFIGURATION ---
     WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.namespace: "calendar"
     exclusionMode: WlrLayershell.Ignore
     
     implicitWidth: 340

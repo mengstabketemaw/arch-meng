@@ -14,6 +14,7 @@ PanelWindow {
     
     // --- WAYLAND CONFIGURATION ---
     WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.namespace: "wallpaper"
     exclusionMode: WlrLayershell.Ignore
     
     implicitWidth: 380
@@ -75,32 +76,8 @@ PanelWindow {
         function close(): void { root.isOpen = false } 
     }
 
-    // Default fallback folder just in case the file doesn't exist
-    property string wallpaperFolder: "file://" + Quickshell.env("HOME") + "/.config/ml4w/wallpapers"
-
-    Process {
-        id: folderLoader
-        // Call cat directly and pass the path as the second array item
-        command: ["cat", Quickshell.env("HOME") + "/.config/ml4w/settings/wallpaper-folder"]
-        running: true
-        
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let rawPath = this.text.trim();
-                
-                if (rawPath !== "") {
-                    rawPath = rawPath.replace("$HOME", Quickshell.env("HOME"));
-                    rawPath = rawPath.replace("~", Quickshell.env("HOME"));
-                    // Ensure the path starts with file:// for the FolderListModel
-                    let newPath = rawPath.startsWith("file://") ? rawPath : "file://" + rawPath;
-                    if (root.wallpaperFolder === newPath) {
-                        root.wallpaperFolder = "";
-                    }
-                    root.wallpaperFolder = newPath;
-                }
-            }
-        }
-    }
+    // Wallpaper folder
+    property string wallpaperFolder: "file://" + Quickshell.env("HOME") + "/.config/hypr/assets"
 
     // --- REUSABLE COMPONENTS ---
     component ML4WMenuItem: MenuItem {
@@ -199,7 +176,7 @@ PanelWindow {
                             text: "Random Wallpaper"
                             onClicked: {
                                 root.isOpen = false
-                                Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/ml4w/scripts/ml4w-wallpaper --random"])
+                                Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/hypr/scripts/wallpaper.sh --random"])
                             } 
                         }
                         
@@ -207,7 +184,7 @@ PanelWindow {
                             text: "Wallpaper Effects"
                             onClicked: {
                                 root.isOpen = false
-                                Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/ml4w/scripts/ml4w-wallpaper-effects"])
+                                Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/hypr/scripts/wallpaper-effects.sh"])
                             } 
                         }
 
@@ -215,14 +192,15 @@ PanelWindow {
                             text: "Clear Wallpaper Cache"
                             onClicked: {
                                 root.isOpen = false
-                                Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/ml4w/scripts/ml4w-clear-wallpaper-cache"])
+                                Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/hypr/scripts/clear-wallpaper-cache.sh"])
                             } 
                         }
 
                         ML4WMenuItem { 
                             text: "Reload Images"
                             onClicked: {
-                                folderLoader.running = true;
+                                root.wallpaperFolder = "";
+                                root.wallpaperFolder = "file://" + Quickshell.env("HOME") + "/.config/hypr/assets";
                             } 
                         }
 
@@ -361,7 +339,7 @@ PanelWindow {
                             cursorShape: Qt.PointingHandCursor
                             
                             onClicked: {
-                                let scriptPath = Quickshell.env("HOME") + "/.config/ml4w/scripts/ml4w-wallpaper";
+                                let scriptPath = Quickshell.env("HOME") + "/.config/hypr/scripts/wallpaper.sh";
                                 Quickshell.execDetached(["bash", "-c", scriptPath + " '" + model.filePath + "'"]);
                             }
                         }

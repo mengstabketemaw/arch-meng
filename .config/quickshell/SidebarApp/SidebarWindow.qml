@@ -13,12 +13,11 @@ PanelWindow {
     
     // --- WAYLAND CONFIGURATION ---
     WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.namespace: "sidebar"
     exclusionMode: WlrLayershell.Ignore
     
     implicitWidth: 380
     color: "transparent"
-
-    property bool isHyprlandSettingsInstalled: false
 
     anchors {
         right: true
@@ -72,19 +71,6 @@ PanelWindow {
         function toggle(): void { root.isOpen = !root.isOpen }
         function open(): void { root.isOpen = true }   
         function close(): void { root.isOpen = false } 
-    }
-
-    // --- Check if flatpak is installed when window opens ---
-    Process {
-        command: ["bash", "-c", Quickshell.env("HOME") + "/.config/ml4w/scripts/ml4w-flatpak-installed com.ml4w.hyprlandsettings"]
-        running: root.visible
-        
-        stdout: StdioCollector {
-            onStreamFinished: {
-                console.log(this.text.trim())
-                root.isHyprlandSettingsInstalled = (this.text.trim() === "0")
-            }
-        }
     }
 
     // --- REUSABLE COMPONENTS ---
@@ -200,7 +186,7 @@ PanelWindow {
                 ActionIcon {
                     iconTxt: "󰔎"
                     onClicked: {
-                        Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/ml4w/scripts/ml4w-toggle-theme"])
+                        Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/hypr/scripts/toggle-theme.sh"])
                     }
                 }
 
@@ -208,7 +194,7 @@ PanelWindow {
                     iconTxt: "" 
                     onClicked: {
                         root.isOpen = false
-                        Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/ml4w/settings/hyprpicker.sh"])
+                        Quickshell.execDetached(["hyprpicker"])
                     }
                 }
 
@@ -230,28 +216,7 @@ PanelWindow {
                 Layout.fillWidth: true
                 spacing: 10
                 
-                ML4WButton { 
-                    text: "Welcome"
-                    onClicked: {
-                        root.isOpen = false
-                        Quickshell.execDetached(["bash", "-c", "qs ipc call welcome toggle"])
-                    }
-                }
-                ML4WButton { 
-                    text: "Settings"
-                    onClicked: {
-                        root.isOpen = false
-                        Quickshell.execDetached(["bash", "-c", "qs -p " + Quickshell.env("HOME") + "/.local/share/ml4w-dotfiles-settings/quickshell ipc call settings toggle"])
-                    }
-                }
-                ML4WButton { 
-                    text: "Hyprland"
-                    visible: root.isHyprlandSettingsInstalled 
-                    onClicked: {
-                        root.isOpen = false
-                        Quickshell.execDetached(["bash", "-c", "flatpak run com.ml4w.hyprlandsettings"])
-                    }
-                }
+                Item { Layout.fillWidth: true }
             }
 
             Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Theme.primary; opacity: 0.3 }
@@ -570,185 +535,6 @@ PanelWindow {
                         visible: Mpris.players.values.length > 0 
                     }
 
-                    // --- WAYBAR ---
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Text { text: "Waybar"; color: Theme.on_background; font.family: Theme.fontFamily; font.pixelSize: 16 }
-                        Item { Layout.fillWidth: true } 
-                        ML4WSwitch { 
-                            id: waybarSwitch
-                            property bool ready: false
-                            Process {
-                                command: ["bash", "-c", "test -f ~/.config/ml4w/settings/waybar-disabled && echo 0 || echo 1"]
-                                running: root.isOpen 
-                                stdout: StdioCollector {
-                                    onStreamFinished: {
-                                        console.log("Test for Waybar: " + this.text.trim())
-                                        waybarSwitch.checked = (this.text.trim() === "1")
-                                        waybarSwitch.ready = true
-                                    }
-                                }
-                            }
-                            onClicked: {
-                                if (!ready) return;
-                                let fileCmd = checked 
-                                ? "rm -f ~/.config/ml4w/settings/waybar-disabled"
-                                : "touch ~/.config/ml4w/settings/waybar-disabled"       
-                                console.log("Waybar cmd: " + fileCmd)
-                                Quickshell.execDetached(["bash", "-c", fileCmd + ";" + Quickshell.env("HOME") + "/.config/waybar/launch.sh"])
-                            }
-                        }
-
-                        SettingsWheel {
-                            onClicked: waybarMenu.open()
-                            Menu {
-                                id: waybarMenu
-                                y: parent.height
-                                implicitWidth: 220
-                                padding: 8
-                                
-                                background: Rectangle { color: Theme.background; border.color: Theme.primary; border.width: 1; radius: 8 }
-                                ML4WMenuItem { text: "Select Waybar Theme"; onClicked: {
-                                        Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/waybar/themeswitcher.sh"])
-                                    }
-                                }
-                                ML4WMenuItem { text: "Edit Quicklinks"; onClicked: {
-                                        root.isOpen = false
-                                        Quickshell.execDetached(["gnome-text-editor", Quickshell.env("HOME") + "/.config/ml4w/settings/waybar-quicklinks.json"])
-                                    }
-                                }
-                                ML4WMenuItem { text: "Reload Waybar"; onClicked: {
-                                        Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/waybar/launch.sh"])
-                                    } 
-                                }
-                            }
-                        }
-                    }
-
-                    // --- DOCK ---
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Text { text: "Dock"; color: Theme.on_background; font.family: Theme.fontFamily; font.pixelSize: 16 }
-                        Item { Layout.fillWidth: true }
-                        ML4WSwitch { 
-                            id: dockSwitch
-                            property bool ready: false
-                            Process {
-                                command: ["bash", "-c", "test -f ~/.config/ml4w/settings/dock-disabled && echo 0 || echo 1"]
-                                running: root.isOpen 
-                                stdout: StdioCollector {
-                                    onStreamFinished: {
-                                        console.log("Test for Dock: " + this.text.trim())
-                                        dockSwitch.checked = (this.text.trim() === "1")
-                                        dockSwitch.ready = true
-                                    }
-                                }
-                            }
-                            onClicked: {
-                                if (!ready) return;
-                                let fileCmd = checked 
-                                ? "rm -f ~/.config/ml4w/settings/dock-disabled"
-                                : "touch ~/.config/ml4w/settings/dock-disabled"
-                                console.log("Dock cmd: " + fileCmd)
-                                Quickshell.execDetached(["bash", "-c", fileCmd + "; " + Quickshell.env("HOME") + "/.config/nwg-dock-hyprland/launch.sh"])
-                            }
-                        }
-                        Item { implicitWidth: 28 } 
-                    }
-
-                    // --- GAMEMODE ---
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Text { text: "Gamemode"; color: Theme.on_background; font.family: Theme.fontFamily; font.pixelSize: 16 }
-                        Item { Layout.fillWidth: true }
-                        ML4WSwitch { 
-                            id: gamemodeSwitch
-                            property bool ready: false
-                            Process {
-                                command: ["bash", "-c", "test -f ~/.config/ml4w/settings/gamemode-enabled && echo 0 || echo 1"]
-                                running: root.isOpen 
-                                stdout: StdioCollector {
-                                    onStreamFinished: {
-                                        console.log("Test for Gamemode: " + this.text.trim())
-                                        gamemodeSwitch.checked = (this.text.trim() === "0")
-                                        gamemodeSwitch.ready = true
-                                    }
-                                }
-                            }
-                            onClicked: {
-                                if (!ready) return;
-                                Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/hypr/scripts/gamemode.sh"])
-                            }
-                        }
-                        Item { implicitWidth: 28 } 
-                    }
-
-                    // --- FASTFETCH ---
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Text { text: "Fastfetch"; color: Theme.on_background; font.family: Theme.fontFamily; font.pixelSize: 16 }
-                        Item { Layout.fillWidth: true }
-                        ML4WSwitch { 
-                            id: fastfetchSwitch
-                            property bool ready: false
-                            Process {
-                                command: ["bash", "-c", "test -f ~/.config/ml4w/settings/hide-fastfetch && echo 1 || echo 0"]
-                                running: root.isOpen 
-                                stdout: StdioCollector {
-                                    onStreamFinished: {
-                                        console.log("Test for Fastfetch: " + this.text.trim())
-                                        fastfetchSwitch.checked = (this.text.trim() === "0")
-                                        fastfetchSwitch.ready = true
-                                    }
-                                }
-                            }
-                            onClicked: {
-                                if (!ready) return;
-                                Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/ml4w/scripts/ml4w-toggle-fastfetch"])
-                            }
-                        }
-                        Item { implicitWidth: 28 } 
-                    }
-
-                    // --- SIDEPAD ---
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Text { text: "Sidepad"; color: Theme.on_background; font.family: Theme.fontFamily; font.pixelSize: 16 }
-                        Item { Layout.fillWidth: true }
-                        ML4WSwitch { 
-                            id: sidepadSwitch
-                            onClicked: {
-                                if (checked) {
-                                    console.log("Launching sidebar...")
-                                    Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/ml4w/scripts/ml4w-sidepad --init"])
-                                } else {
-                                    console.log("Stopping sidebar...")
-                                    Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/ml4w/scripts/ml4w-sidepad --kill"])
-                                }
-                            }
-                        }
-                        SettingsWheel {
-                            onClicked: sidepadMenu.open()
-                            Menu {
-                                id: sidepadMenu
-                                y: parent.height
-                                
-                                implicitWidth: 220
-                                padding: 8
-                                
-                                background: Rectangle { color: Theme.background; border.color: Theme.primary; border.width: 1; radius: 8 }
-                                ML4WMenuItem { text: "Select Sidepad"; onClicked: {
-                                        Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/ml4w/scripts/ml4w-sidepad --select"])
-                                    } 
-                                }
-                                ML4WMenuItem { text: "Open Sidepad Folder"; onClicked: {
-                                        Quickshell.execDetached(["nautilus", Quickshell.env("HOME") + "/.config/sidepad/pads"])
-                                    } 
-                                }
-                            }
-                        }
-                    }
-
                     Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Theme.primary; opacity: 0.3; Layout.topMargin: 5; Layout.bottomMargin: 5 }
 
                     // --- WALLPAPER ---
@@ -760,7 +546,7 @@ PanelWindow {
                             iconTxt: ""
                             onClicked: {
                                 root.isOpen = false
-                                Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/ml4w/scripts/ml4w-wallpaper-app"])
+                                Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/hypr/scripts/wallpaper-app.sh"])
                             }
                         }
                     }
@@ -774,7 +560,7 @@ PanelWindow {
                             iconTxt: ""
                             onClicked: {
                                 root.isOpen = false
-                                Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/ml4w/themes/themes.sh"])
+                                Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/hypr/scripts/themes.sh"])
                             }
                         }
                         SettingsWheel {
