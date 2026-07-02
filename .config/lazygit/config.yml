@@ -1,0 +1,50 @@
+customCommands:
+  - key: "<c-g>"
+    description: "Generate commit message with Gemini"
+    context: "files"
+    prompts:
+      - type: "input"
+        title: "Gemini Commit Message"
+        key: "Msg"
+        initialValue: '{{runCommand "/home/meng/scripts/gemini-commit.sh"}}'
+    command: 'git commit -m "{{.Form.Msg}}"'
+os:
+  editPreset: 'nvim'
+  edit: 'nvr --remote-send "q" && nvr -l --remote "{{filename}}"'
+  editInTerminal: false
+gui:
+  theme:
+    # Active panel has a bright, glowing cyan border
+    activeBorderColor:
+      - "#7dcfff"
+      - bold
+    # Inactive panels blend darkly into the background
+    inactiveBorderColor:
+      - "#292e42"
+    # Active search results glow orange
+    searchingActiveBorderColor:
+      - "#ff9e64"
+      - bold
+    # Selected line in the ACTIVE panel gets a distinct, dark-blue highlight
+    selectedLineBgColor:
+      - "#283457"
+    # Selected line in INACTIVE panels is barely visible to avoid confusion
+    inactiveViewSelectedLineBgColor:
+      - "#1f2335"
+    # Bottom menu options text
+    optionsTextColor:
+      - "#565f89"
+    # Git graph and commit states
+    cherryPickedCommitFgColor:
+      - "#73daca"
+    cherryPickedCommitBgColor:
+      - "#bb9af7"
+    markedBaseCommitFgColor:
+      - "#7dcfff"
+    markedBaseCommitBgColor:
+      - "#e0af68"
+    # File status colors
+    unstagedChangesColor:
+      - "#f7768e"
+    defaultFgColor:
+      - "#c0caf5"

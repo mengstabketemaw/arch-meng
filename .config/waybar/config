@@ -52,8 +52,7 @@
     ],
     // Modules Center
     "modules-center": [
-        "hyprland/window",
-        "custom/empty"
+        "clock"
     ],
     // Modules Right    
     "modules-right": [
@@ -67,7 +66,6 @@
         "group/hardware",
         "group/tools",
         "custom/exit",
-        "clock",
         "tray",
         "custom/notification",
         "custom/ml4w-welcome"
