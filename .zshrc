@@ -5,6 +5,7 @@ export EDITOR=nvim
 export PATH=$PATH:$HOME/.cargo/bin:$HOME/.local/bin
 export ZSH="$HOME/.oh-my-zsh"
 export PATH=/home/meng/.opencode/bin:$PATH
+export PATH="$HOME/.npm-global/bin:$PATH"
 
 # =====================================================
 #  OH-MY-ZSH PLUGINS
@@ -46,6 +47,8 @@ eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/zen.toml)"
 # =====================================================
 #  ALIASES
 # =====================================================
+
+source /usr/share/nvm/init-nvm.sh
 
 # Utils
 alias c='clear'
