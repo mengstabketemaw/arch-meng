@@ -86,9 +86,18 @@ TOOLS_PKGS=(
     neovim
     vim
     nano
+    zsh
+    zoxide
+    eza
+    nvm
     wget
     curl
     git
+    tree-sitter
+    nodejs
+    npm
+    lua-language-server
+    stylua
 )
 
 # -------------------------------------------------
@@ -99,6 +108,7 @@ MEDIA_PKGS=(
     cliphist
     playerctl
     brightnessctl
+    awww
     imagemagick
     tesseract
     tesseract-data-eng
@@ -121,6 +131,7 @@ THEME_PKGS=(
     qt6-declarative
     qt6-svg
     qt6-wayland
+    qt6-5compat
     qt6ct
     matugen
     adwaita-icon-theme
@@ -142,6 +153,8 @@ FONT_PKGS=(
     ttf-fira-code
     ttf-fira-sans
     ttf-nerd-fonts-symbols
+    ttf-material-icons
+    otf-font-awesome
 )
 
 # -------------------------------------------------

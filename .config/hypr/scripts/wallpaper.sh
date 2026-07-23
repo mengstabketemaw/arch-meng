@@ -7,14 +7,14 @@ NOTIFICATIONS=false
 SKIP=false
 CACHE_FOLDER="$HOME/.cache/hyprland-dotfiles"
 CACHE_FILE="$CACHE_FOLDER/current_wallpaper"
-DEFAULT_WALLPAPER="$HOME/arch-setup/wallpapers/blank.png"
+DEFAULT_WALLPAPER="$HOME/arch-meng/wallpapers/blank.png"
 BLURRED_WALLPAPER="$CACHE_FOLDER/blurred_wallpaper.png"
 SQUARE_WALLPAPER="$CACHE_FOLDER/square_wallpaper.png"
 RASI_FILE="$CACHE_FOLDER/current_wallpaper.rasi"
 
 # Settings
 BLUR="50x30"
-WALLPAPER_FOLDER="$HOME/arch-setup/wallpapers"
+WALLPAPER_FOLDER="$HOME/arch-meng/wallpapers"
 EFFECT="off"
 TRANSITION_EFFECT="left"
 
@@ -228,17 +228,6 @@ else
     disown
 fi
 info "Waybar reloaded"
-
-# Reload nwg-dock-hyprland
-nohup bash -c "$HOME/.config/nwg-dock-hyprland/launch.sh" > /dev/null 2>&1 &
-disown
-info "nwg-dock-hyprland reloaded"
-
-# Update Pywalfox
-if type pywalfox >/dev/null 2>&1; then
-    pywalfox update
-    info "pywalfox updated"
-fi
 
 # Update SwayNC
 sleep 0.1

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 WALLPAPER_APP="quickshell"
-WALLPAPER_FOLDER="$HOME/arch-setup/wallpapers"
+WALLPAPER_FOLDER="$HOME/arch-meng/wallpapers"
 
 # Colors for UI
 RED='\033[0;31m'
@@ -19,7 +19,13 @@ error() { echo -e "${RED}[ERROR]${NC} $1" >&2; }
 # Check parameters
 if [ "$1" == "--restore" ]; then
     if [ "$WALLPAPER_APP" == "quickshell" ]; then
-        info "Using awww with Quickshell Wallpaper Selector."
+        CACHE_FILE="$HOME/.cache/hyprland-dotfiles/current_wallpaper"
+        if [ -f "$CACHE_FILE" ]; then
+            WALLPAPER=$(cat "$CACHE_FILE")
+            if [ -f "$WALLPAPER" ]; then
+                $HOME/.config/hypr/scripts/wallpaper.sh "$WALLPAPER" --skip
+            fi
+        fi
     elif [ "$WALLPAPER_APP" == "waypaper" ]; then
         waypaper --restore
     else
