@@ -326,8 +326,8 @@
     "tooltip-format-ethernet": " {ifname}\nIP: {ipaddr}\n up: {bandwidthUpBits} down: {bandwidthDownBits}",
     "tooltip-format-disconnected": "Disconnected",
     "max-length": 50,
-    "on-click": "nm-connection-editor",
-    "on-click-right": "~/.config/hypr/scripts/nm-applet.sh toggle",
+    "on-click": "iwctl",
+    "on-click-right": "iwctl",
   },
   // Battery
   "battery": {

@@ -1,28 +1,6 @@
 #!/usr/bin/env bash
-set -e
 
-DOTFILES="$HOME/arch-setup"
-
-echo ":: Installing packages..."
-# sudo pacman -S --needed --noconfirm \
-#     hyprland hyprlock hypridle hyprpaper \
-#     quickshell waybar rofi kitty swaync \
-#     cliphist playerctl awww matugen \
-#     brightnessctl grim slurp swappy \
-#     tesseract tesseract-data-eng \
-#     btop blueman networkmanager \
-#     pinta polkit-gnome \
-#     qt6-base qt6-declarative qt6-svg qt6-wayland \
-#     fcitx5 fcitx5-mozc \
-#     xdg-desktop-portal-hyprland
-#
-if ! command -v grimblast &>/dev/null; then
-    if command -v yay &>/dev/null; then
-        yay -S --noconfirm grimblast-git
-    else
-        echo "WARNING: grimblast not found. Install grimblast-git from AUR manually."
-    fi
-fi
+DOTFILES="$(cd "$(dirname "$0")" && pwd)"
 
 mkdir -p "$HOME/.config"
 
@@ -33,10 +11,10 @@ ln -sf "$DOTFILES/.Xresources" "$HOME/.Xresources"
 for dir in "$DOTFILES/.config"/*/; do
     target="$HOME/.config/$(basename "$dir")"
     if [ -e "$target" ] && [ ! -L "$target" ]; then
-        echo "  WARNING: $target exists and is not a symlink — skipping"
-    else
-        ln -sfn "$dir" "$target"
+        echo "  $target exists and is not a symlink — moving to $target.bak"
+        mv "$target" "$target.bak"
     fi
+    ln -sfn "$dir" "$target"
 done
 
 echo ":: Creating cache directory..."
