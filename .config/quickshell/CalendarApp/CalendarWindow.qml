@@ -108,10 +108,9 @@ PanelWindow {
         implicitWidth: 28  
         implicitHeight: 28
         text: iconTxt
-        font.family: "monospace"
         background: Rectangle { color: "transparent" }
         contentItem: Text { 
-            text: parent.text; color: Theme.primary; font.pixelSize: 18; 
+            text: parent.text; color: Theme.primary; font.pixelSize: 18; font.family: "Font Awesome 7 Free Solid"
             verticalAlignment: Text.AlignVCenter; horizontalAlignment: Text.AlignHCenter
         }
     }

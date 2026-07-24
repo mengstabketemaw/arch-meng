@@ -118,7 +118,7 @@ PanelWindow {
                 Text {
                     anchors.centerIn: parent
                     text: btn.iconTxt
-                    font.family: "monospace" 
+                    font.family: "Font Awesome 7 Free Solid"
                     font.pixelSize: 20
                     color: mouseArea.containsMouse ? Theme.background : Theme.primary
                 }

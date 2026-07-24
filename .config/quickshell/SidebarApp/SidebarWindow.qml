@@ -137,10 +137,9 @@ PanelWindow {
         implicitWidth: 28  
         implicitHeight: 28
         text: "" 
-        font.family: "monospace"
         background: Rectangle { color: "transparent" }
         contentItem: Text { 
-            text: parent.text; color: Theme.primary; font.pixelSize: 18; 
+            text: parent.text; color: Theme.primary; font.pixelSize: 18; font.family: "Font Awesome 7 Free Solid"
             verticalAlignment: Text.AlignVCenter; horizontalAlignment: Text.AlignHCenter
         }
     }
@@ -150,10 +149,9 @@ PanelWindow {
         implicitWidth: 28  
         implicitHeight: 28
         text: iconTxt
-        font.family: "monospace"
         background: Rectangle { color: "transparent" }
         contentItem: Text { 
-            text: parent.text; color: Theme.primary; font.pixelSize: 18; 
+            text: parent.text; color: Theme.primary; font.pixelSize: 18; font.family: "Font Awesome 7 Free Solid"
             verticalAlignment: Text.AlignVCenter; horizontalAlignment: Text.AlignHCenter
         }
     }
@@ -184,7 +182,7 @@ PanelWindow {
                 spacing: 10
 
                 ActionIcon {
-                    iconTxt: "󰔎"
+                    iconTxt: ""
                     onClicked: {
                         Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/hypr/scripts/toggle-theme.sh"])
                     }
@@ -199,7 +197,7 @@ PanelWindow {
                 }
 
                 ActionIcon { 
-                    iconTxt: ""
+                    iconTxt: ""
                     onClicked: {
                         root.isOpen = false
                         Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/hypr/scripts/screenshot.sh"])
@@ -256,7 +254,7 @@ PanelWindow {
                             Text {
                                 text: "" // Speaker icon
                                 color: Theme.primary
-                                font.family: "monospace"
+                                font.family: "Font Awesome 7 Free Solid"
                                 font.pixelSize: 18
                                 Layout.alignment: Qt.AlignVCenter
                             }
@@ -324,7 +322,7 @@ PanelWindow {
                             Text {
                                 text: "" // Sun/Brightness icon
                                 color: Theme.primary
-                                font.family: "monospace"
+                                font.family: "Font Awesome 7 Free Solid"
                                 font.pixelSize: 18
                                 Layout.alignment: Qt.AlignVCenter
                             }
@@ -451,9 +449,9 @@ PanelWindow {
                                     }
                                     Text {
                                         anchors.centerIn: parent
-                                        text: "󰝚" // Music note icon (fallback)
-                                        font.family: "monospace"
-                                        font.pixelSize: 32
+                                        text: "" // Music note icon (fallback)
+		font.family: "Font Awesome 7 Free Solid"
+		font.pixelSize: 32
                                         color: Theme.primary
                                         visible: !player.trackArtUrl || player.trackArtUrl === ""
                                     }
@@ -498,21 +496,21 @@ PanelWindow {
                                         Item { Layout.fillWidth: true } 
 
                                         ActionIcon {
-                                            iconTxt: "󰒮" 
+                                            iconTxt: "" 
                                             implicitWidth: 32
                                             implicitHeight: 32
                                             onClicked: player.previous()
                                         }
 
                                         ActionIcon {
-                                            iconTxt: player.isPlaying ? "󰏤" : "󰐊" 
+                                            iconTxt: player.isPlaying ? "" : "" 
                                             implicitWidth: 32
                                             implicitHeight: 32
                                             onClicked: player.isPlaying = !player.isPlaying 
                                         }
 
                                         ActionIcon {
-                                            iconTxt: "󰒭" 
+                                            iconTxt: "" 
                                             implicitWidth: 32
                                             implicitHeight: 32
                                             onClicked: player.next()
