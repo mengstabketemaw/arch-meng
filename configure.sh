@@ -39,10 +39,12 @@ if [ -f "$DOTFILES/wallpapers/blank.png" ]; then
 fi
 
 echo ":: Setting up wallpaper..."
-if command -v awww &>/dev/null; then
-    awww init 2>/dev/null || true
+if command -v hyprpaper &>/dev/null; then
     if [ -f "$DOTFILES/wallpapers/blank.png" ]; then
-        awww img "$DOTFILES/wallpapers/blank.png" 2>/dev/null || true
+        hyprctl hyprpaper preload "$DOTFILES/wallpapers/blank.png" 2>/dev/null || true
+        for monitor in $(hyprctl monitors 2>/dev/null | grep -oP 'Monitor \K\S+'); do
+            hyprctl hyprpaper wallpaper "$monitor,$DOTFILES/wallpapers/blank.png" 2>/dev/null || true
+        done
     fi
 fi
 

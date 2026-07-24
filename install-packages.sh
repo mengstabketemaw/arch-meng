@@ -47,6 +47,7 @@ AUDIO_PKGS=(
     pipewire-pulse
     pipewire-alsa
     wireplumber
+    pavucontrol
     sof-firmware
     rtkit
 )
@@ -108,7 +109,6 @@ MEDIA_PKGS=(
     cliphist
     playerctl
     brightnessctl
-    awww
     imagemagick
     tesseract
     tesseract-data-eng

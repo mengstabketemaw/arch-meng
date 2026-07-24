@@ -45,7 +45,7 @@ show_help() {
     echo "  --random FOLDER        Select a random image from FOLDER."
     echo "  --notifications false  Disable desktop notifications."
     echo "  --help                 Show this help message and exit."
-    echo "  --skip                 Will skip setting the wallpaper with awww."
+    echo "  --skip                 Will skip setting the wallpaper with hyprpaper."
     echo ""
 }
 
@@ -153,14 +153,11 @@ if [ ! -d $CACHE_FOLDER ]; then
     mkdir -p $CACHE_FOLDER
 fi
 
-# Ensure awww-daemon is running
-if ! pgrep -x "awww-daemon" > /dev/null; then
-    mkdir -p "$HOME/.cache/awww"
-    info "Starting awww-daemon..."
-    awww-daemon &
-    
-    # Give the daemon a brief moment to initialize before sending commands
-    sleep 1 
+# Ensure hyprpaper is running
+if ! pgrep -x "hyprpaper" > /dev/null; then
+    info "Starting hyprpaper..."
+    hyprpaper &
+    sleep 1
 fi
 
 # Write image path to cache file
@@ -188,7 +185,11 @@ if [ "$SKIP" = true ]; then
 else
     info "Setting wallpaper: $IMAGE_PATH"
     info "Using transition effect $TRANSITION_EFFECT"
-    awww img "$IMAGE_PATH" --transition-type $TRANSITION_EFFECT
+    hyprctl hyprpaper preload "$IMAGE_PATH"
+    for monitor in $(hyprctl monitors | grep -oP 'Monitor \K\S+'); do
+        hyprctl hyprpaper wallpaper "$monitor,$IMAGE_PATH"
+    done
+    hyprctl hyprpaper unload all 2>/dev/null || true
 fi
 
 # Detect Theme
