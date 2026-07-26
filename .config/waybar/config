@@ -22,7 +22,7 @@
     // Pulseaudio
     "pulseaudio": {
         // "scroll-step": 1, // %, can be a float
-        "format": "{icon}   {volume}%",
+        "format": "{icon} {volume}%",
         "format-bluetooth": "{volume}% {icon} {format_source}",
         "format-bluetooth-muted": " {icon} {format_source}",
         "format-muted": " {format_source}",
@@ -64,7 +64,7 @@
         "battery",
         "power-profiles-daemon",
         "group/hardware",
-        "group/tools",
+        // "group/tools",
         "custom/exit",
         "tray",
         "custom/notification",
