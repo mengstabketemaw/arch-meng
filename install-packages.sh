@@ -59,6 +59,8 @@ DISPLAY_PKGS=(
     quickshell
     waybar
     rofi
+    rofi-calc
+    rofimoji
     swaync
     kitty
     kitty-shell-integration
@@ -84,6 +86,12 @@ TOOLS_PKGS=(
     htop
     fastfetch
     lazygit
+    gcc 
+    make 
+    ripgrep 
+    fd 
+    tree-sitter-cli 
+    unzip 
     neovim
     vim
     nano
@@ -155,6 +163,7 @@ FONT_PKGS=(
     ttf-nerd-fonts-symbols
     ttf-material-icons
     otf-font-awesome
+    ttf-jetbrains-mono-nerd
 )
 
 # -------------------------------------------------

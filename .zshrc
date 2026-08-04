@@ -54,10 +54,7 @@ source /usr/share/nvm/init-nvm.sh
 alias c='clear'
 alias v='$EDITOR'
 alias vim='$EDITOR'
-alias shutdown='systemctl poweroff'
-alias wifi='nmtui'
 alias lock='hyprlock'
-alias clock='tty-clock'
 
 # Fastfetch
 alias ff='fastfetch'
