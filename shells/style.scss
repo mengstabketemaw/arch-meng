@@ -18,3 +18,101 @@ window.Bar {
     margin: 2px;
   }
 }
+
+window.Wifi {
+  background: transparent;
+  color: $fg-color;
+
+  .wifi-panel {
+    background: $bg-color;
+    border-radius: 14px;
+    padding: 14px;
+    margin: 8px;
+    min-width: 320px;
+  }
+
+  .wifi-header {
+    margin-bottom: 4px;
+  }
+
+  .wifi-header-icon {
+    font-size: 24px;
+  }
+
+  .wifi-title {
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  .wifi-status {
+    opacity: 0.75;
+    font-size: 12px;
+  }
+
+  .wifi-scan {
+    border-radius: 50%;
+    padding: 6px;
+    margin: 0;
+  }
+
+  .ap-list {
+    margin: 4px 0;
+  }
+
+  .ap-row {
+    border-radius: 10px;
+    padding: 8px 10px;
+    margin: 0;
+
+    &.active {
+      background: alpha($fg-color, 0.12);
+    }
+  }
+
+  .ap-ssid {
+    font-weight: 600;
+  }
+
+  .ap-strength {
+    opacity: 0.6;
+    font-size: 12px;
+  }
+
+  .ap-state {
+    color: alpha($fg-color, 0.85);
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: alpha($fg-color, 0.15);
+  }
+
+  .ap-empty {
+    opacity: 0.6;
+    padding: 8px 10px;
+  }
+
+  .password-prompt {
+    background: alpha($fg-color, 0.08);
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 4px;
+  }
+
+  .password-title {
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  .password-entry {
+    border-radius: 8px;
+    padding: 6px 10px;
+  }
+
+  .password-cancel,
+  .password-ok {
+    border-radius: 8px;
+    padding: 4px 8px;
+    margin: 0;
+  }
+}
+
