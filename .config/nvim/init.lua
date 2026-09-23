@@ -680,7 +680,10 @@ do
   -- You can press `g?` for help in this menu.
   local ensure_installed = vim.tbl_keys(servers or {})
   vim.list_extend(ensure_installed, {
-    -- You can add other tools here that you want Mason to install
+    -- Java tools (jdtls LSP + debugger & test bundles used by nvim-jdtls)
+    'jdtls',
+    'java-debug-adapter',
+    'java-test',
   })
 
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -703,6 +706,7 @@ do
     format_on_save = function(bufnr)
       -- You can specify filetypes to autoformat on save here:
       local enabled_filetypes = {
+        java = true,
         -- lua = true,
         -- python = true,
       }
@@ -822,7 +826,7 @@ do
   vim.pack.add { { src = gh 'nvim-treesitter/nvim-treesitter', version = 'main' } }
 
   -- Ensure basic parsers are installed
-  local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+  local parsers = { 'bash', 'c', 'diff', 'html', 'java', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'xml' }
   require('nvim-treesitter').install(parsers)
 
   ---@param buf integer

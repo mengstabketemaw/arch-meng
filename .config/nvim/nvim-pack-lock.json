@@ -95,6 +95,10 @@
       "rev": "03bd29672d7fab5e515fc8469b7d07cc5994bbf6",
       "src": "https://github.com/mxsdev/nvim-dap-vscode-js"
     },
+    "nvim-jdtls": {
+      "rev": "6e9d953f0b82bccdb834cfde0e893f3119c22592",
+      "src": "https://github.com/mfussenegger/nvim-jdtls"
+    },
     "nvim-lint": {
       "rev": "d48f3a76189d03b2239f6df1b2f7e3fa8353743b",
       "src": "https://github.com/mfussenegger/nvim-lint"

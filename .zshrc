@@ -67,3 +67,7 @@ alias lt='eza -a --tree --level=1 --icons=always'
 # System
 alias update-grub='sudo grub-mkconfig -o /boot/grub/grub.cfg'
 
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/meng/.local/bin:$PATH"
