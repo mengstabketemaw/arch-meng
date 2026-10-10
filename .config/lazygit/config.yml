@@ -9,42 +9,62 @@ customCommands:
         initialValue: '{{runCommand "/home/meng/scripts/gemini-commit.sh"}}'
     command: 'git commit -m "{{.Form.Msg}}"'
 os:
-  editPreset: 'nvim'
-  edit: 'nvr --remote-send "q" && nvr -l --remote "{{filename}}"'
-  editInTerminal: false
+  # The nvim-remote preset suspends lazygit only when it is NOT running inside
+  # Neovim ($NVIM unset), so standalone lazygit hands the terminal to nvim and
+  # lazygit inside <leader>gg stays non-blocking. The commands themselves go
+  # through nvim-open.sh, which talks to the parent Neovim via `nvim --server`.
+  editPreset: "nvim-remote"
+  edit: "~/.config/lazygit/nvim-open.sh {{filename}}"
+  editAtLine: "~/.config/lazygit/nvim-open.sh {{filename}} {{line}}"
+  editAtLineAndWait: "nvim +{{line}} -- {{filename}}"
+  openDirInEditor: "~/.config/lazygit/nvim-open.sh {{dir}}"
 gui:
+  nerdFontsVersion: "3"
+  border: "rounded"
+  showFileIcons: true
+  showBottomLine: true
+  showCommandLog: false
+  showRandomTip: false
+  sidePanelWidth: 0.3
+  expandFocusedSidePanel: true
+  mainPanelSplitMode: "flexible"
+  # Tokyo Night (night) — matches the Neovim colorscheme
   theme:
-    # Active panel has a bright, glowing cyan border
     activeBorderColor:
-      - "#7dcfff"
-      - bold
-    # Inactive panels blend darkly into the background
-    inactiveBorderColor:
-      - "#292e42"
-    # Active search results glow orange
-    searchingActiveBorderColor:
       - "#ff9e64"
       - bold
-    # Selected line in the ACTIVE panel gets a distinct, dark-blue highlight
+    inactiveBorderColor:
+      - "#3b4261"
+    searchingActiveBorderColor:
+      - "#e0af68"
+      - bold
+    optionsTextColor:
+      - "#7aa2f7"
     selectedLineBgColor:
       - "#283457"
-    # Selected line in INACTIVE panels is barely visible to avoid confusion
     inactiveViewSelectedLineBgColor:
-      - "#1f2335"
-    # Bottom menu options text
-    optionsTextColor:
-      - "#565f89"
-    # Git graph and commit states
+      - "#292e42"
     cherryPickedCommitFgColor:
-      - "#73daca"
+      - "#1a1b26"
     cherryPickedCommitBgColor:
       - "#bb9af7"
     markedBaseCommitFgColor:
-      - "#7dcfff"
+      - "#1a1b26"
     markedBaseCommitBgColor:
       - "#e0af68"
-    # File status colors
     unstagedChangesColor:
       - "#f7768e"
     defaultFgColor:
       - "#c0caf5"
+  authorColors:
+    "*": "#7dcfff"
+  branchColorPatterns:
+    "^main$": "#9ece6a"
+    "^master$": "#9ece6a"
+git:
+  # Diffs rendered by delta with true-color backgrounds (see delta.gitconfig)
+  diffRenderers:
+    - colorArg: always
+      command: delta --config /home/meng/.config/lazygit/delta.gitconfig --paging=never
+  log:
+    showGraph: "always"

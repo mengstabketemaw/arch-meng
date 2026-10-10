@@ -1,0 +1,39 @@
+# delta styling for lazygit's diff panel (Claude Code-style diffs).
+# Hex colors are used everywhere so the diff does not depend on the terminal's
+# ANSI palette (matugen sets "green" to near-white).
+[delta]
+    dark = true
+    paging = never
+    syntax-theme = OneHalfDark
+    line-numbers = true
+    tabs = 4
+
+    # whole-line tint for removed / added lines
+    minus-style = syntax "#3b1d24"
+    plus-style = syntax "#1c3326"
+    # brighter tint on the exact words that changed
+    minus-emph-style = syntax "#6b2a35"
+    plus-emph-style = syntax "#2e5a3c"
+    minus-empty-line-marker-style = normal "#3b1d24"
+    plus-empty-line-marker-style = normal "#1c3326"
+    whitespace-error-style = "#f7768e" reverse
+
+    # gutter: old/new line numbers, colored by change type
+    line-numbers-minus-style = "#f7768e"
+    line-numbers-plus-style = "#9ece6a"
+    line-numbers-zero-style = "#3b4261"
+    line-numbers-left-style = "#3b4261"
+    line-numbers-right-style = "#3b4261"
+    line-numbers-left-format = "{nm:>4} "
+    line-numbers-right-format = "{np:>4} │ "
+
+    # headers
+    file-style = "#7aa2f7" bold
+    file-decoration-style = "#3b4261" ul
+    file-added-label = [+]
+    file-removed-label = [-]
+    file-modified-label = [~]
+    hunk-header-style = line-number syntax
+    hunk-header-decoration-style = "#3b4261" box
+    hunk-header-line-number-style = "#e0af68"
+    commit-decoration-style = "#bb9af7" box
