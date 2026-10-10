@@ -71,3 +71,17 @@ alias update-grub='sudo grub-mkconfig -o /boot/grub/grub.cfg'
 
 # Added by Antigravity CLI installer
 export PATH="/home/meng/.local/bin:$PATH"
+
+. "$HOME/.local/share/../bin/env"
+
+
+fuck() {
+    if [ -z "$1" ]; then
+        return 1
+    fi
+
+    echo "Nuking all processes on port $1..."
+    
+    # -k: kill, -n tcp: specifies the protocol, -s 9: forcefully kill immediately
+    sudo fuser -k -n tcp "$1" || echo "No process found running on port $1."
+}

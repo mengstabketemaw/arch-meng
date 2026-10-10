@@ -1,0 +1,19 @@
+[output]
+# Switch this from noncurses to ncurses to unlock hex gradients
+method = ncurses
+orientation = bottom
+channels = stereo
+xaxis = none
+bar_width = 1
+bar_spacing = 0
+
+[colors]
+gradient = 1
+# Include the explicit color count so the ncurses engine scales the layout
+gradient_count = 5
+gradient_color_1 = #50fa7b
+gradient_color_2 = #8be9fd
+gradient_color_3 = #ff79c6
+gradient_color_4 = #bd93f9
+gradient_color_5 = #ff5555
+
