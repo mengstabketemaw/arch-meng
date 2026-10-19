@@ -28,6 +28,8 @@ selected_dir=$(run_fzf)
 full_path="${selected_dir/#\~/$HOME}"
 project_name=$(basename "$full_path")
 
-# Launch project in a clean new tab titled exactly after the folder name
-kitty @ launch --type=tab --tab-title="$project_name" --cwd="$full_path"
+# Open the project in a new tab titled after the folder, with Neovim running
+# nvim runs inside an interactive zsh (so .zshrc PATH/env apply); quitting it
+# leaves a shell in the project folder instead of closing the tab
+kitty @ launch --type=tab --tab-title="$project_name" --cwd="$full_path" --var "wt=$full_path" zsh -ic 'nvim; exec zsh'
 

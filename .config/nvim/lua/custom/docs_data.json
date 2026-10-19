@@ -1,0 +1,668 @@
+[
+  {
+    "key": "K",
+    "mode": "n",
+    "name": "LSP Hover Documentation",
+    "category": "LSP & Docs",
+    "desc": "Open documentation / type signature for the symbol under cursor in a floating window.",
+    "detail": "Press 'K' while on any function, variable, class, or keyword to see its documentation, parameters, and return type. Press 'K' a second time to jump into the documentation float to scroll through it with j/k, then press 'q' or <Esc> to exit.",
+    "keywords": "doc docs documentation lsp hover type info signature help quick"
+  },
+  {
+    "key": "<leader>q",
+    "mode": "n",
+    "name": "Open Diagnostic Quickfix / Loclist",
+    "category": "Diagnostics",
+    "desc": "Opens the location list / quickfix window populated with current buffer diagnostics.",
+    "detail": "Leader is Space. Press <Space>q to open the quickfix window showing all errors and warnings in the current file. Navigate entries with j/k, press <CR> to jump to an error, and close the window with :lclose or :q.",
+    "keywords": "quick quickfix loclist diagnostics errors warnings lint window list"
+  },
+  {
+    "key": "[d / ]d",
+    "mode": "n",
+    "name": "Jump to Prev / Next Diagnostic",
+    "category": "Diagnostics",
+    "desc": "Jump between errors and warnings, automatically opening a floating error detail popup.",
+    "detail": "Press ']d' to jump to the next diagnostic error/warning or '[d' for the previous one. Your config automatically pops up a rounded floating window displaying the full error message without having to hover.",
+    "keywords": "diagnostic next prev error jump warning float popup"
+  },
+  {
+    "key": "<C-Space>",
+    "mode": "i",
+    "name": "Trigger Completion & Docs Popup",
+    "category": "Autocomplete",
+    "desc": "Open the completion menu or toggle the documentation preview window for the active item.",
+    "detail": "While typing in Insert mode, press Ctrl+Space to force open the autocomplete menu. If the menu is already open, pressing Ctrl+Space opens the documentation side-panel explaining the highlighted candidate.",
+    "keywords": "autocomplete cmp completion doc docs documentation signature blink"
+  },
+  {
+    "key": "<C-y>",
+    "mode": "i",
+    "name": "Accept Autocompletion",
+    "category": "Autocomplete",
+    "desc": "Accept the highlighted completion candidate ([y]es).",
+    "detail": "In Insert mode, accepts the highlighted item. Automatically adds import statements if the LSP supports auto-import, and expands snippet placeholders.",
+    "keywords": "accept completion yes enter tab blink import"
+  },
+  {
+    "key": "<C-k>",
+    "mode": "i",
+    "name": "Toggle Signature Help",
+    "category": "Autocomplete",
+    "desc": "Toggle the floating signature window displaying parameter types as you type function arguments.",
+    "detail": "Shows the expected arguments and types for the function call you are currently writing.",
+    "keywords": "signature help parameters arguments lsp function blink"
+  },
+  {
+    "key": "<Tab> / <S-Tab>",
+    "mode": "i",
+    "name": "Jump Snippet Placeholders",
+    "category": "Autocomplete",
+    "desc": "Jump forward (<Tab>) or backward (<S-Tab>) through snippet placeholders.",
+    "detail": "When a snippet is expanded (like creating a method or class), use Tab to jump to the next parameter placeholder and Shift+Tab to jump back.",
+    "keywords": "snippet luasnip tab placeholder expand template"
+  },
+  {
+    "key": "grd",
+    "mode": "n",
+    "name": "LSP Goto Definition",
+    "category": "LSP & Code Nav",
+    "desc": "Jump to where the variable, function, or class under cursor was defined.",
+    "detail": "Opens definition using Telescope. If multiple definitions exist, Telescope lets you pick. Press <C-t> to jump back to where you were before!",
+    "keywords": "definition goto jump lsp source declaration back ctrl-t"
+  },
+  {
+    "key": "grr",
+    "mode": "n",
+    "name": "LSP Goto References",
+    "category": "LSP & Code Nav",
+    "desc": "Search for all references to the symbol under cursor across your whole project.",
+    "detail": "Opens a Telescope picker listing every file and line where the symbol is referenced. Filter by typing, press <CR> to jump.",
+    "keywords": "references find usages where used lsp telescope"
+  },
+  {
+    "key": "gri",
+    "mode": "n",
+    "name": "LSP Goto Implementation",
+    "category": "LSP & Code Nav",
+    "desc": "Jump to concrete implementations of an interface or abstract method.",
+    "detail": "Essential for languages like Java, Go, and TypeScript. Opens Telescope picker if multiple classes implement the method.",
+    "keywords": "implementation interface abstract class lsp goto"
+  },
+  {
+    "key": "grt",
+    "mode": "n",
+    "name": "LSP Goto Type Definition",
+    "category": "LSP & Code Nav",
+    "desc": "Jump to the definition of a variable's *type* rather than where the variable itself was instantiated.",
+    "detail": "Useful when inspecting a variable and you want to jump directly to its class / struct / interface definition.",
+    "keywords": "type definition struct class interface lsp"
+  },
+  {
+    "key": "grn",
+    "mode": "n",
+    "name": "LSP Rename Symbol",
+    "category": "LSP & Refactoring",
+    "desc": "Safely rename the symbol under cursor across the entire workspace.",
+    "detail": "Prompts for a new name and updates all occurrences across all files in your project according to semantic LSP rules.",
+    "keywords": "rename refactor symbol variable function class lsp"
+  },
+  {
+    "key": "gra",
+    "mode": "n, v",
+    "name": "LSP Code Actions",
+    "category": "LSP & Refactoring",
+    "desc": "Show available code actions (quick-fixes, auto-imports, refactorings).",
+    "detail": "Move cursor over an error or warning, or select a block of code in Visual mode, and press 'gra'. Select from available fixes or transformations.",
+    "keywords": "code action quickfix fix import refactor lightbulb lsp"
+  },
+  {
+    "key": "gO",
+    "mode": "n",
+    "name": "Document Symbols Outline",
+    "category": "LSP & Code Nav",
+    "desc": "Fuzzy find functions, classes, and variables in the current buffer via Telescope.",
+    "detail": "Provides an instant outline of the current file. Filter by typing method or variable names to jump directly to them.",
+    "keywords": "symbols document outline methods functions classes telescope"
+  },
+  {
+    "key": "gW",
+    "mode": "n",
+    "name": "Workspace Symbols Search",
+    "category": "LSP & Code Nav",
+    "desc": "Fuzzy find all symbols across your entire workspace/project via Telescope.",
+    "detail": "Search classes, methods, constants across all project files without having to open the file first.",
+    "keywords": "workspace symbols project classes methods functions telescope"
+  },
+  {
+    "key": "<leader>th",
+    "mode": "n",
+    "name": "Toggle Inlay Hints",
+    "category": "LSP",
+    "desc": "Toggle inline parameter name and inferred type hints on/off.",
+    "detail": "Press <Space>th. If your LSP server supports inlay hints, toggles inline parameter names (e.g. 'title: ' or 'count: ') directly in your code buffer.",
+    "keywords": "inlay hints parameters types toggle lsp"
+  },
+  {
+    "key": "<leader>f",
+    "mode": "n, v",
+    "name": "Format Buffer / Selection",
+    "category": "Formatting",
+    "desc": "Format the entire buffer or selected visual range via conform.nvim.",
+    "detail": "Press <Space>f. Uses your configured formatters (stylua, Java LSP formatter, prettier, etc.) asynchronously.",
+    "keywords": "format formatting conform stylua prettier indent lint"
+  },
+  {
+    "key": "<leader>sf",
+    "mode": "n",
+    "name": "Search Files",
+    "category": "Telescope / Search",
+    "desc": "Fuzzy search files by name in current project (respects .gitignore).",
+    "detail": "Press <Space>sf. Type any part of a file name or path. Press <CR> to open, <C-v> to open in vertical split, <C-x> to open in horizontal split.",
+    "keywords": "find search files find_files telescope open filename"
+  },
+  {
+    "key": "<leader>SF",
+    "mode": "n",
+    "name": "Search All Files (incl. Hidden & Ignored)",
+    "category": "Telescope / Search",
+    "desc": "Fuzzy search all files, including dotfiles and files in .gitignore.",
+    "detail": "Press <Space>SF. Searches files that normal file search ignores (e.g. .env, build output, dotfiles).",
+    "keywords": "hidden ignored gitignore dotfiles find files search telescope"
+  },
+  {
+    "key": "<leader>sg",
+    "mode": "n",
+    "name": "Live Grep",
+    "category": "Telescope / Search",
+    "desc": "Search for text contents across all files in project via ripgrep.",
+    "detail": "Press <Space>sg. Type words or phrases to search text inside all files in real time. Press <CR> to jump to the match.",
+    "keywords": "grep search text ripgrep find content live_grep telescope"
+  },
+  {
+    "key": "<leader>SG",
+    "mode": "n",
+    "name": "Live Grep All (incl. Hidden & Ignored)",
+    "category": "Telescope / Search",
+    "desc": "Live grep across all files, including gitignored and hidden files.",
+    "detail": "Press <Space>SG. Useful when searching in vendor files, logs, or .gitignore'd source directories.",
+    "keywords": "grep all hidden ignored gitignore ripgrep telescope"
+  },
+  {
+    "key": "<leader>sw",
+    "mode": "n, v",
+    "name": "Search Word Under Cursor",
+    "category": "Telescope / Search",
+    "desc": "Grep for the word currently under your cursor (or visual selection) across all files.",
+    "detail": "Press <Space>sw on any word or identifier. In visual mode, greps for the exact highlighted text.",
+    "keywords": "search word grep cursor selection telescope"
+  },
+  {
+    "key": "<leader>/",
+    "mode": "n",
+    "name": "Fuzzy Search Current Buffer",
+    "category": "Telescope / Search",
+    "desc": "Fuzzily search lines inside the currently active buffer (dropdown theme).",
+    "detail": "Press <Space>/ to open a sleek popup dropdown. Type words to find matching lines in the current file instantly.",
+    "keywords": "search buffer current find lines dropdown telescope"
+  },
+  {
+    "key": "<leader>s/",
+    "mode": "n",
+    "name": "Live Grep in Open Files",
+    "category": "Telescope / Search",
+    "desc": "Live grep search restricted only to currently open buffers.",
+    "detail": "Press <Space>s/. Searches contents across files you have already opened rather than entire disk.",
+    "keywords": "grep open buffers files telescope"
+  },
+  {
+    "key": "<leader><Space>",
+    "mode": "n",
+    "name": "Find Existing Buffers",
+    "category": "Telescope / Search",
+    "desc": "Browse and switch between all currently open editor buffers.",
+    "detail": "Press <Space><Space>. Type to filter open tabs/buffers and press <CR> to switch to it.",
+    "keywords": "buffers switch open tabs telescope list"
+  },
+  {
+    "key": "<leader>s.",
+    "mode": "n",
+    "name": "Search Recent Files",
+    "category": "Telescope / Search",
+    "desc": "Search recently opened files (oldfiles).",
+    "detail": "Press <Space>s. to quickly jump back to files you edited in previous sessions.",
+    "keywords": "recent oldfiles history files telescope"
+  },
+  {
+    "key": "<leader>sd",
+    "mode": "n",
+    "name": "Search Diagnostics",
+    "category": "Telescope / Search",
+    "desc": "Search all errors, warnings, and hints across the entire workspace.",
+    "detail": "Press <Space>sd to view a project-wide error list. Filter by error message, severity, or filename.",
+    "keywords": "diagnostics errors warnings lint workspace telescope"
+  },
+  {
+    "key": "<leader>sk",
+    "mode": "n",
+    "name": "Search Keymaps",
+    "category": "Telescope / Help",
+    "desc": "Fuzzy search all registered key combinations and commands in Neovim.",
+    "detail": "Press <Space>sk. Search any key or description to see what it is mapped to and what plugin created it.",
+    "keywords": "keymaps keys bindings shortcuts search telescope"
+  },
+  {
+    "key": "<leader>sh",
+    "mode": "n",
+    "name": "Search Help Documentation",
+    "category": "Telescope / Help",
+    "desc": "Fuzzy search Neovim's official :help documentation tags.",
+    "detail": "Press <Space>sh. Search any Vim concept, command, or plugin name (e.g. 'lsp', 'treesitter', 'wincmd').",
+    "keywords": "help doc documentation tags manual guide telescope"
+  },
+  {
+    "key": "<leader>sc",
+    "mode": "n",
+    "name": "Search Commands",
+    "category": "Telescope / Search",
+    "desc": "Fuzzy search and execute Neovim user commands and builtin commands.",
+    "detail": "Press <Space>sc. Shows commands with descriptions; press <CR> to execute.",
+    "keywords": "commands execute run telescope"
+  },
+  {
+    "key": "<leader>ss",
+    "mode": "n",
+    "name": "Select Telescope Builtin Pickers",
+    "category": "Telescope / Search",
+    "desc": "Browse and launch any of Telescope's built-in pickers.",
+    "detail": "Press <Space>ss to discover all available pickers in Telescope.",
+    "keywords": "select telescope builtins pickers list"
+  },
+  {
+    "key": "<leader>sr",
+    "mode": "n",
+    "name": "Resume Last Telescope Search",
+    "category": "Telescope / Search",
+    "desc": "Re-open your previous Telescope search with the exact query and selection preserved.",
+    "detail": "Press <Space>sr if you accidentally closed a search or need to pick another item from the same list.",
+    "keywords": "resume previous last search telescope"
+  },
+  {
+    "key": "<leader>sn",
+    "mode": "n",
+    "name": "Search Neovim Config Files",
+    "category": "Telescope / Config",
+    "desc": "Fuzzy find files inside your ~/.config/nvim configuration folder.",
+    "detail": "Press <Space>sn to quickly open any config file (init.lua, custom plugins, etc.).",
+    "keywords": "config neovim nvim files dotfiles telescope"
+  },
+  {
+    "key": "\\",
+    "mode": "n",
+    "name": "Toggle File Tree (NvimTree)",
+    "category": "File Explorer",
+    "desc": "Toggle NvimTree sidebar and automatically locate/reveal the current file.",
+    "detail": "Press the backslash key '\\'. NvimTree opens on the left with the current file highlighted. In NvimTree: <CR> opens file, 'a' creates new file/folder, 'd' deletes, 'r' renames, 'q' closes.",
+    "keywords": "tree explorer files sidebar nvimtree find reveal toggle"
+  },
+  {
+    "key": "<C-h> / <C-j> / <C-k> / <C-l>",
+    "mode": "n",
+    "name": "Navigate Window Splits",
+    "category": "Windows & Splits",
+    "desc": "Seamlessly switch focus between window splits without pressing <C-w> first.",
+    "detail": "Ctrl+h moves to left window, Ctrl+j moves to window below, Ctrl+k moves to window above, Ctrl+l moves to right window. New splits can be created with :split (<C-w>s) and :vsplit (<C-w>v).",
+    "keywords": "split window navigate focus left right up down ctrl-w"
+  },
+  {
+    "key": "<Esc>",
+    "mode": "n",
+    "name": "Clear Search Highlights",
+    "category": "Editor Basics",
+    "desc": "Clear yellow highlight marks from previous searches (:nohlsearch).",
+    "detail": "Press <Esc> in Normal mode to instantly remove search highlight colors after searching with / or ?.",
+    "keywords": "clear search highlight nohlsearch esc"
+  },
+  {
+    "key": "p (Visual)",
+    "mode": "x",
+    "name": "Safe Visual Paste",
+    "category": "Editor Basics",
+    "desc": "Paste over a visual selection without replacing your clipboard with the deleted text.",
+    "detail": "In normal Vim, pasting over text replaces your register with the deleted text. In your config, visual 'p' uses '\"_dP', so your copied text remains intact in clipboard for multiple pastes!",
+    "keywords": "paste visual clipboard register safe replace"
+  },
+  {
+    "key": "<C-\\>",
+    "mode": "n, t",
+    "name": "Universal Floating Terminal",
+    "category": "Terminal",
+    "desc": "Toggle a floating terminal overlay from normal or terminal mode.",
+    "detail": "Press Ctrl+\\ anywhere to pop up a floating terminal window with TokyoNight styling. Press Ctrl+\\ again to dismiss it without killing your running process.",
+    "keywords": "terminal float toggleterm shell bash popup"
+  },
+  {
+    "key": "<C-t>",
+    "mode": "n, t",
+    "name": "Toggle Float Terminal #1",
+    "category": "Terminal",
+    "desc": "Toggle persistent floating terminal session #1.",
+    "detail": "Press Ctrl+t in normal or terminal mode. This terminal has ID 1 and stays running in the background when hidden.",
+    "keywords": "terminal float 1 toggleterm persistent"
+  },
+  {
+    "key": "<M-t>",
+    "mode": "n, t",
+    "name": "Toggle Float Terminal #2",
+    "category": "Terminal",
+    "desc": "Toggle persistent floating terminal session #2 (Alt+t).",
+    "detail": "Press Alt+t (Meta+t) to open a separate, independent terminal session (ID 2). Run servers in one terminal and shell commands in the other!",
+    "keywords": "terminal float 2 alt-t toggleterm second"
+  },
+  {
+    "key": "<Esc><Esc>",
+    "mode": "t",
+    "name": "Exit Terminal Insert Mode",
+    "category": "Terminal",
+    "desc": "Switch from terminal interactive mode back to Neovim Normal mode (<C-\\><C-n>).",
+    "detail": "Double-tap <Esc> inside any terminal window to enter normal mode so you can scroll output, copy text with y, or switch windows with <C-h/j/k/l>.",
+    "keywords": "terminal exit normal scroll copy mode"
+  },
+  {
+    "key": "<leader>gg",
+    "mode": "n",
+    "name": "LazyGit Interface",
+    "category": "Git",
+    "desc": "Open the full LazyGit floating TUI directly inside Neovim.",
+    "detail": "Press <Space>gg. Opens LazyGit in a centered floating window. Stage, unstage, commit, branch, merge, rebase. Opening a file from LazyGit seamlessly opens it in your Neovim buffer!",
+    "keywords": "git lazygit tui commit branch stage status push pull"
+  },
+  {
+    "key": "<leader>gw",
+    "mode": "n",
+    "name": "Git Worktrees",
+    "category": "Git",
+    "desc": "Pick a git worktree and jump to its own Neovim in its own kitty tab.",
+    "detail": "Press <Space>gw. Lists the repo's worktrees (● = current). Enter focuses the kitty tab already running Neovim in that worktree, or opens a new tab titled repo:branch. Your current Neovim keeps running in the background with its buffers, LSP and debugger. In LazyGit's Worktrees panel, press o to do the same.",
+    "keywords": "git worktree switch branch kitty tab background lazygit"
+  },
+  {
+    "key": "]c / [c",
+    "mode": "n",
+    "name": "Next / Prev Git Hunk",
+    "category": "Git",
+    "desc": "Jump cursor to next (']c') or previous ('[c') git modification hunk.",
+    "detail": "Quickly jump through code changes in the active buffer. Automatically respects vim diff mode if active.",
+    "keywords": "git hunk change next prev diff gitsigns"
+  },
+  {
+    "key": "<leader>hs",
+    "mode": "n, v",
+    "name": "Stage Git Hunk",
+    "category": "Git",
+    "desc": "Stage the git change hunk under cursor (or visually selected lines).",
+    "detail": "Press <Space>hs in normal mode to stage the hunk under cursor. In visual mode, stages precisely the selected lines into git index.",
+    "keywords": "git stage hunk gitsigns index"
+  },
+  {
+    "key": "<leader>hr",
+    "mode": "n, v",
+    "name": "Reset / Discard Git Hunk",
+    "category": "Git",
+    "desc": "Revert/discard changes in the current git hunk (or visually selected lines).",
+    "detail": "Press <Space>hr to revert the hunk back to the last committed state.",
+    "keywords": "git reset revert discard hunk undo gitsigns"
+  },
+  {
+    "key": "<leader>hS / <leader>hR",
+    "mode": "n",
+    "name": "Stage / Reset Entire Buffer",
+    "category": "Git",
+    "desc": "<Space>hS stages all changes in current buffer; <Space>hR discards all changes.",
+    "detail": "Fast staging or reverting of an entire file.",
+    "keywords": "git stage buffer reset revert all gitsigns"
+  },
+  {
+    "key": "<leader>hp / <leader>hi",
+    "mode": "n",
+    "name": "Preview Git Hunk (Popup / Inline)",
+    "category": "Git",
+    "desc": "<Space>hp opens a floating diff popup of the hunk; <Space>hi toggles inline diff.",
+    "detail": "Review changes without opening an external diff tool.",
+    "keywords": "git preview popup inline diff hunk gitsigns"
+  },
+  {
+    "key": "<leader>hb",
+    "mode": "n",
+    "name": "Git Blame Line",
+    "category": "Git",
+    "desc": "Open a detailed floating window with git blame, author, commit hash, date, message.",
+    "detail": "Press <Space>hb on any line to inspect who wrote it and the full commit message.",
+    "keywords": "git blame author commit date message gitsigns"
+  },
+  {
+    "key": "<leader>hd / <leader>hD",
+    "mode": "n",
+    "name": "Git Diff Split (Index / Last Commit)",
+    "category": "Git",
+    "desc": "<Space>hd diffs against git index (staged); <Space>hD diffs against HEAD (@).",
+    "detail": "Opens a side-by-side Vim diff view.",
+    "keywords": "git diff split staged head compare gitsigns"
+  },
+  {
+    "key": "<leader>hq / <leader>hQ",
+    "mode": "n",
+    "name": "Git Hunks Quickfix List",
+    "category": "Git",
+    "desc": "<Space>hq populates quickfix with hunks in this file; <Space>hQ with all hunks in repo.",
+    "detail": "Turn all code changes into a quickfix checklist you can step through with :cnext and :cprev.",
+    "keywords": "git hunks quickfix list all repo file gitsigns"
+  },
+  {
+    "key": "<leader>tb / <leader>tw",
+    "mode": "n",
+    "name": "Toggle Git Blame / Word Diff",
+    "category": "Git",
+    "desc": "<Space>tb toggles virtual text blame at end of line; <Space>tw toggles intra-line word diff.",
+    "detail": "Instant visual toggles for reviewing changes directly in the code.",
+    "keywords": "git toggle blame word diff virtual text gitsigns"
+  },
+  {
+    "key": "<F9> / <F5>",
+    "mode": "n",
+    "name": "Debugger: Start / Resume",
+    "category": "Debugger (DAP)",
+    "desc": "Start debugging session or resume execution until the next breakpoint.",
+    "detail": "Matches IntelliJ keybinding (F9). If no session is running, starts the debugger; if stopped at a breakpoint, resumes running.",
+    "keywords": "debug debugger dap start resume continue f9 f5"
+  },
+  {
+    "key": "<F8>",
+    "mode": "n",
+    "name": "Debugger: Step Over",
+    "category": "Debugger (DAP)",
+    "desc": "Step to the next line of code without entering function calls (IntelliJ F8).",
+    "detail": "Executes the current line and pauses at the next line.",
+    "keywords": "debug step over next f8 dap"
+  },
+  {
+    "key": "<F7>",
+    "mode": "n",
+    "name": "Debugger: Step Into",
+    "category": "Debugger (DAP)",
+    "desc": "Step into the function call at the current line (IntelliJ F7).",
+    "detail": "Enters the called method or function definition.",
+    "keywords": "debug step into inside function f7 dap"
+  },
+  {
+    "key": "<S-F8>",
+    "mode": "n",
+    "name": "Debugger: Step Out",
+    "category": "Debugger (DAP)",
+    "desc": "Step out of the current function to its caller (IntelliJ Shift+F8 / F20).",
+    "detail": "Finishes execution of the current function and returns to the line where it was invoked.",
+    "keywords": "debug step out finish return shift-f8 dap"
+  },
+  {
+    "key": "<A-F9>",
+    "mode": "n",
+    "name": "Debugger: Run to Cursor",
+    "category": "Debugger (DAP)",
+    "desc": "Continue execution directly until reaching the cursor's line (IntelliJ Alt+F9).",
+    "detail": "Positions cursor on desired line and continues execution without needing a permanent breakpoint.",
+    "keywords": "debug run to cursor alt-f9 dap"
+  },
+  {
+    "key": "<C-F8> / <leader>b",
+    "mode": "n",
+    "name": "Toggle Breakpoint",
+    "category": "Debugger (DAP)",
+    "desc": "Toggle breakpoint on the current line (IntelliJ Ctrl+F8 or <Space>b).",
+    "detail": "Places or removes a breakpoint sign on the current line.",
+    "keywords": "debug breakpoint toggle ctrl-f8 leader-b dap"
+  },
+  {
+    "key": "<leader>B",
+    "mode": "n",
+    "name": "Conditional Breakpoint",
+    "category": "Debugger (DAP)",
+    "desc": "Set a breakpoint with a custom condition expression.",
+    "detail": "Prompts: 'Breakpoint condition: '. The debugger will only pause if the expression evaluates to true (e.g. i == 100).",
+    "keywords": "debug conditional breakpoint condition expr dap"
+  },
+  {
+    "key": "<A-F8> / <leader>de",
+    "mode": "n",
+    "name": "Evaluate Expression",
+    "category": "Debugger (DAP)",
+    "desc": "Evaluate the expression or variable under cursor in a floating inspector.",
+    "detail": "IntelliJ Alt+F8 or <Space>de. Opens a popup displaying the evaluated runtime value.",
+    "keywords": "debug evaluate expression inspect hover alt-f8 dap"
+  },
+  {
+    "key": "<leader>du",
+    "mode": "n",
+    "name": "Toggle Debug UI Panels",
+    "category": "Debugger (DAP)",
+    "desc": "Toggle DAP-UI side panels (scopes, call stack, watches, breakpoints, repl).",
+    "detail": "Press <Space>du to open or close the debugger side panel view on the left.",
+    "keywords": "debug dap-ui panels scopes stack watches toggle"
+  },
+  {
+    "key": "<leader>dc / :DapConsole",
+    "mode": "n",
+    "name": "Toggle Program Output Console",
+    "category": "Debugger (DAP)",
+    "desc": "Toggle the bottom program output / logs console split.",
+    "detail": "Press <Space>dc. Displays stdout/stderr from your running application or debug session (like IntelliJ's Run/Console tab).",
+    "keywords": "debug console output logs stdout run dapconsole"
+  },
+  {
+    "key": "<leader>dx / <leader>dl",
+    "mode": "n",
+    "name": "Clear / List Breakpoints",
+    "category": "Debugger (DAP)",
+    "desc": "<Space>dx clears all breakpoints; <Space>dl lists all active breakpoints.",
+    "detail": "Quick management of your breakpoints across the entire project.",
+    "keywords": "debug breakpoints clear list dap"
+  },
+  {
+    "key": "<leader>jj",
+    "mode": "n",
+    "name": "Java: IntelliJ Action Menu",
+    "category": "Java Development",
+    "desc": "Open IntelliJ-style Java action menu (run, debug, test, rebuild, maven/gradle, JDK).",
+    "detail": "Press <Space>jj. Provides an interactive menu for running main classes, running JUnit tests (method, class, or pick), managing Maven/Gradle tasks, selecting JDKs, and viewing logs.",
+    "keywords": "java menu intellij run debug test maven gradle jdtls"
+  },
+  {
+    "key": "<leader>jv / :JavaVersion",
+    "mode": "n",
+    "name": "Java: Version / JDK Picker",
+    "category": "Java Development",
+    "desc": "Interactive floating JDK picker; detects system JDKs, SDKMAN, and IntelliJ downloads.",
+    "detail": "Press <Space>jv or run :JavaVersion. Switches project JDK and persists the choice in java-projects.json.",
+    "keywords": "java version jdk sdkman jvm picker jdtls"
+  },
+  {
+    "key": "<leader>jp / :SpringProfile",
+    "mode": "n",
+    "name": "Java: Spring Profile Selector",
+    "category": "Java Development",
+    "desc": "Interactive Spring Boot active profile selector.",
+    "detail": "Press <Space>jp or run :SpringProfile. Sets SPRING_PROFILES_ACTIVE for all run, debug, test, and Maven/Gradle launches.",
+    "keywords": "java spring profile spring-boot active environment"
+  },
+  {
+    "key": "<S-F10>",
+    "mode": "n",
+    "name": "Java: Re-run Last Configuration",
+    "category": "Java Development",
+    "desc": "Re-run the last launched Java main class or configuration (IntelliJ Shift+F10 / F22).",
+    "detail": "Builds project incrementally before running and streams output to bottom console.",
+    "keywords": "java rerun rerun-last shift-f10 intellij"
+  },
+  {
+    "key": "<S-F9>",
+    "mode": "n",
+    "name": "Java: Debug Main Class",
+    "category": "Java Development",
+    "desc": "Debug Java main class (IntelliJ Shift+F9 / F21).",
+    "detail": "Prompts to pick a main class or automatically selects the one in current file.",
+    "keywords": "java debug main shift-f9 intellij"
+  },
+  {
+    "key": "<C-F2>",
+    "mode": "n",
+    "name": "Java: Stop Running App",
+    "category": "Java Development",
+    "desc": "Stop the running application or active debug session (IntelliJ Ctrl+F2 / F26).",
+    "detail": "Immediately terminates the debuggee process.",
+    "keywords": "java stop kill terminate ctrl-f2 intellij"
+  },
+  {
+    "key": "<A-o>",
+    "mode": "n",
+    "name": "Java: Organize Imports",
+    "category": "Java Development",
+    "desc": "Organize imports in Java file (Alt+o).",
+    "detail": "Removes unused imports, resolves ambiguous imports, and sorts imports according to Java conventions.",
+    "keywords": "java organize imports clean unused alt-o jdtls"
+  },
+  {
+    "key": "crv / crc / crm",
+    "mode": "n, v",
+    "name": "Java: Refactor Extractions",
+    "category": "Java Development",
+    "desc": "Extract variable ('crv'), constant ('crc'), or method ('crm').",
+    "detail": "crv extracts expression into variable, crc into static final constant, crm (in visual mode) extracts selected code into a new method.",
+    "keywords": "java extract variable constant method refactor jdtls"
+  },
+  {
+    "key": "saiw) / sd' / sr)'",
+    "mode": "n",
+    "name": "Surround Add / Delete / Replace",
+    "category": "Editing (mini.surround)",
+    "desc": "Surround text with brackets, quotes, or tags using mini.surround.",
+    "detail": "saiw) = [S]urround [A]dd [I]nner [W]ord with (); sd' = [S]urround [D]elete '; sr)' = [S]urround [R]eplace ) with '.",
+    "keywords": "surround brackets quotes mini.surround add delete replace"
+  },
+  {
+    "key": "va) / yiiq / ci'",
+    "mode": "n, v",
+    "name": "Extended Text Objects",
+    "category": "Editing (mini.ai)",
+    "desc": "Enhanced text objects for selecting, yanking, or changing inside/around delimiters.",
+    "detail": "va) selects around parens; yiiq yanks inside the next quote on the line; ci' changes inside single quotes; 'aa' / 'ii' target next delimiters.",
+    "keywords": "textobjects mini.ai visual yank change inner around inside"
+  },
+  {
+    "key": "<leader>? / :Doc",
+    "mode": "n",
+    "name": "Interactive Documentation & Search",
+    "category": "Documentation",
+    "desc": "Open interactive searchable documentation directly inside Neovim.",
+    "detail": "Press <Space>? or run :Doc. Opens an interactive Telescope picker indexing all key combinations, workflows, and Neovim concepts.",
+    "keywords": "doc docs documentation cheatsheet help search keys interactive"
+  }
+]

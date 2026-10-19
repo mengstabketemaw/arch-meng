@@ -8,6 +8,12 @@ customCommands:
         key: "Msg"
         initialValue: '{{runCommand "/home/meng/scripts/gemini-commit.sh"}}'
     command: 'git commit -m "{{.Form.Msg}}"'
+  # Each worktree runs in its own Neovim / kitty tab; the current one stays open
+  - key: "o"
+    description: "Open worktree in its own kitty tab (Neovim)"
+    context: "worktrees"
+    command: "~/.config/lazygit/worktree-open.sh {{.SelectedWorktree.Path | quote}}"
+    output: "none"
 os:
   # The nvim-remote preset suspends lazygit only when it is NOT running inside
   # Neovim ($NVIM unset), so standalone lazygit hands the terminal to nvim and
@@ -56,11 +62,11 @@ gui:
       - "#f7768e"
     defaultFgColor:
       - "#c0caf5"
-  authorColors:
-    "*": "#7dcfff"
-  branchColorPatterns:
-    "^main$": "#9ece6a"
-    "^master$": "#9ece6a"
+    authorColors:
+      "*": "#7dcfff"
+    branchColorPatterns:
+      "^main$": "#9ece6a"
+      "^master$": "#9ece6a"
 git:
   # Diffs rendered by delta with true-color backgrounds (see delta.gitconfig)
   diffRenderers:

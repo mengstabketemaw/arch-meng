@@ -67,6 +67,18 @@ alias lt='eza -a --tree --level=1 --icons=always'
 # System
 alias update-grub='sudo grub-mkconfig -o /boot/grub/grub.cfg'
 
+# Lazygit
+# The staging view (opening a file) ignores delta and paints diffs with the
+# terminal's ANSI red/green, which matugen sets to pink/near-white. Swap in
+# Tokyo Night colors for this window while lazygit runs, then restore them.
+lazygit() {
+  printf '\e]4;1;#f7768e\a\e]4;2;#9ece6a\a\e]4;6;#7dcfff\a'
+  command lazygit "$@"
+  local ret=$?
+  printf '\e]104;1;2;6\a'
+  return $ret
+}
+
 
 
 # Added by Antigravity CLI installer

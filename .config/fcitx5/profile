@@ -10,13 +10,13 @@ DefaultIM=m17n_am_sera
 # Name
 Name=keyboard-us
 # Layout
-Layout=
+# Layout=
 
 [Groups/0/Items/1]
 # Name
 Name=m17n_am_sera
 # Layout
-Layout=
+# Layout=
 
 [GroupOrder]
 0=Default

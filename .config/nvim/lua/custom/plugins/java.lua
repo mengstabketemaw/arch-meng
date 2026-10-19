@@ -3,9 +3,10 @@
 --
 --   <leader>jj   Java menu: run / debug / tests / Maven or Gradle / project JDK / ...
 --   <leader>jv   Java version picker (also :JavaVersion)
+--   <leader>jp   Spring profile picker (also :SpringProfile), used by run/debug, tests and Maven/Gradle
 --   <S-F10>      Re-run last run configuration  (IntelliJ: Shift+F10)
 --   <S-F9>       Debug (pick main class)         (IntelliJ: Shift+F9)
---   <C-F2>       Stop                            (IntelliJ: Ctrl+F2)
+--   <C-F2>       Stop app, or else the running Maven/Gradle command (IntelliJ: Ctrl+F2)
 --   <A-o>        Organize imports
 --   crv/crc/crm  Extract variable / constant / method
 --
@@ -301,29 +302,14 @@ end
 -- Run / Debug (IntelliJ run configurations)
 -- ============================================================
 
-local last_launch -- the last dap configuration started from here
-
-local function short_class(main) return main:match '([^.]+)$' or main end
-
-local function launch(config, debug)
-  local dap = require 'dap'
-  config = vim.deepcopy(config)
-  local root = config.cwd or project_root()
-  local st = project_state(root)
-  config.noDebug = not debug or nil
-  config.name = (debug and 'Debug ' or 'Run ') .. short_class(config.mainClass)
-  config.args = st.args or ''
-  config.vmArgs = vim.trim(((config.vmArgs or '') .. ' ' .. (st.vmArgs or '')))
-  local jdk = project_jdk(root)
-  if jdk then config.javaExec = jdk.path .. '/bin/java' end
-  last_launch = { config = config, debug = debug }
-
-  local function start() dap.run(config) end
-  if dap.session() then
-    dap.terminate { on_done = vim.schedule_wrap(start) }
-  else
-    start()
-  end
+--- `env` plus SPRING_PROFILES_ACTIVE for the project's Spring profile (removed
+--- again when no profile is set), or nil when that leaves nothing.
+--- An environment variable beats spring.profiles.active in application.properties.
+local function with_profile_env(root, env)
+  env = vim.deepcopy(env or {})
+  local profile = project_state(root).profile
+  env.SPRING_PROFILES_ACTIVE = profile ~= '' and profile or nil
+  return next(env) and env or nil
 end
 
 local function client_for(root)
@@ -340,6 +326,115 @@ local function jdtls_command(client, command, arguments, callback)
 end
 
 local function err_text(err) return err and (err.message or vim.inspect(err)) or '' end
+
+--- IntelliJ "Build before run": save every modified buffer, let jdtls do an
+--- incremental build (only what changed, like Ctrl+F9) and call `on_built`.
+--- jdtls only compiles saved files, so without this a run could start old classes.
+--- Compile errors go to the quickfix list with a choice to run anyway.
+--- Resource files (application.properties, ...) that are newer than their copy in
+--- target/classes or target/test-classes, as LSP file events (1 = created, 2 = changed).
+--- Neovim does not report file changes to jdtls on Linux, so without this jdtls
+--- never notices an edited resource and the app keeps reading the old copy.
+local function changed_resources(root)
+  local events = {}
+  for _, module in ipairs(vim.list_extend({ root }, glob_list(root .. '/*'), 1, nil)) do
+    for src, out in pairs { ['src/main/resources'] = 'target/classes', ['src/test/resources'] = 'target/test-classes' } do
+      local dir = module .. '/' .. src
+      if vim.fn.isdirectory(dir) == 1 then
+        for name, type in vim.fs.dir(dir, { depth = 20 }) do
+          if type == 'file' then
+            local file = dir .. '/' .. name
+            local copy = vim.uv.fs_stat(module .. '/' .. out .. '/' .. name)
+            local stat = vim.uv.fs_stat(file)
+            if stat and (not copy or stat.mtime.sec > copy.mtime.sec or (stat.mtime.sec == copy.mtime.sec and stat.mtime.nsec > copy.mtime.nsec)) then
+              table.insert(events, { uri = vim.uri_from_fname(file), type = copy and 2 or 1 })
+            end
+          end
+        end
+      end
+    end
+  end
+  return events
+end
+
+local function build_before_run(root, on_built)
+  vim.cmd 'silent! wall'
+  local client = client_for(root)
+  if not client then return on_built() end
+  local is_maven = vim.uv.fs_stat(root .. '/pom.xml') ~= nil
+  -- after `mvn clean` target/classes is gone, and an incremental build would not notice
+  local full = is_maven and not vim.uv.fs_stat(root .. '/target/classes')
+  vim.api.nvim_echo({ { 'Building…', 'Comment' } }, false, {})
+
+  local on_result
+  local function build(attempt)
+    -- let jdtls copy (and filter) changed resources in the build below
+    local events = is_maven and changed_resources(root) or {}
+    if #events > 0 then client:notify('workspace/didChangeWatchedFiles', { changes = events }) end
+    client:request('java/buildWorkspace', full, function(err, status)
+      vim.schedule(function() on_result(err, status, attempt, #events) end)
+    end)
+  end
+
+  function on_result(err, status, attempt, resources)
+    if err then return notify('Build failed:\n' .. err_text(err), vim.log.levels.ERROR) end
+    if status == 1 then -- SUCCEED
+      -- jdtls refreshes changed files in the background, so the build can finish
+      -- before it copied them: build again until the copies are up to date
+      if resources > 0 and attempt < 10 and #changed_resources(root) > 0 then
+        return vim.defer_fn(function() build(attempt + 1) end, 300)
+      end
+      vim.api.nvim_echo({ { '' } }, false, {})
+      return on_built()
+    end
+    if status == 3 then return notify 'Build cancelled' end -- CANCELLED
+    -- FAILED / WITHERROR: list the errors of the Java files
+    local errors = {}
+    for _, d in ipairs(vim.diagnostic.get(nil, { severity = vim.diagnostic.severity.ERROR })) do
+      if vim.api.nvim_buf_get_name(d.bufnr):match '%.java$' then table.insert(errors, d) end
+    end
+    vim.fn.setqflist({}, 'r', { title = 'Build errors', items = vim.diagnostic.toqflist(errors) })
+    vim.ui.select({ 'Show errors', 'Run anyway' }, {
+      prompt = ('Build has %d error%s'):format(#errors, #errors == 1 and '' or 's'),
+    }, function(choice)
+      if choice == 'Run anyway' then
+        on_built()
+      elseif choice == 'Show errors' then
+        vim.cmd 'copen'
+      end
+    end)
+  end
+
+  build(1)
+end
+
+local last_launch -- the last dap configuration started from here
+
+local function short_class(main) return main:match '([^.]+)$' or main end
+
+local function launch(config, debug)
+  local dap = require 'dap'
+  config = vim.deepcopy(config)
+  local root = config.cwd or project_root()
+  local st = project_state(root)
+  config.env = with_profile_env(root, config.env)
+  config.noDebug = not debug or nil
+  config.name = (debug and 'Debug ' or 'Run ') .. short_class(config.mainClass)
+  config.args = st.args or ''
+  config.vmArgs = vim.trim(((config.vmArgs or '') .. ' ' .. (st.vmArgs or '')))
+  local jdk = project_jdk(root)
+  if jdk then config.javaExec = jdk.path .. '/bin/java' end
+  last_launch = { config = config, debug = debug }
+
+  local function start() dap.run(config) end
+  build_before_run(root, function()
+    if dap.session() then
+      dap.terminate { on_done = vim.schedule_wrap(start) }
+    else
+      start()
+    end
+  end)
+end
 
 --- Make sure jdtls runs for `root`: if no Java file of the project is open,
 --- load one in the background (its FileType autocmd starts jdtls).
@@ -450,10 +545,15 @@ local function rerun(debug)
   launch(last_launch.config, debug == nil and last_launch.debug or debug)
 end
 
+local build_running, stop_build -- Maven/Gradle section below
+
+--- Ctrl+F2: stop the running app / debug session, otherwise a running Maven/Gradle command
 local function stop()
   local dap = require 'dap'
   if dap.session() then
     dap.terminate()
+  elseif build_running() then
+    stop_build()
   else
     notify 'Nothing is running'
   end
@@ -468,6 +568,71 @@ local function edit_run_args()
       if vm == nil then return end
       save_project_state(root, { args = args, vmArgs = vm })
       notify 'Run arguments saved for this project'
+    end)
+  end)
+end
+
+-- ============================================================
+-- Spring profile (IntelliJ: run configuration → Active profiles)
+-- ============================================================
+
+--- Profiles the project defines: application-<name>.properties/.yml files and
+--- `spring.config.activate.on-profile` sections, in the project or its modules.
+local function spring_profiles(root)
+  local found, seen = {}, {}
+  local function add(name)
+    for p in name:gmatch '[^,%s\'"]+' do
+      if not seen[p] then
+        seen[p] = true
+        table.insert(found, p)
+      end
+    end
+  end
+  for _, dir in ipairs { '', '/*', '/*/*' } do
+    for _, file in ipairs(glob_list(root .. dir .. '/src/main/resources/application*.*')) do
+      local name = vim.fn.fnamemodify(file, ':t')
+      local profile = name:match '^application%-(.+)%.properties$' or name:match '^application%-(.+)%.ya?ml$'
+      if profile then add(profile) end
+      if name:match '%.ya?ml$' or name:match '%.properties$' then
+        for p in (read_file(file) or ''):gmatch 'on%-profile[%s:=]+([^\n#]+)' do
+          add(p)
+        end
+      end
+    end
+  end
+  table.sort(found)
+  return found
+end
+
+local function set_profile(root, profile)
+  save_project_state(root, { profile = profile })
+  local msg = profile ~= '' and ('Spring profile: ' .. profile) or 'Spring profile: none (default)'
+  local dap_ok, dap = pcall(require, 'dap')
+  if dap_ok and dap.session() then msg = msg .. '\nRestart the running app (Shift+F10) to apply it.' end
+  notify(msg .. '\nUsed by run/debug, tests and Maven/Gradle.')
+end
+
+local function select_profile()
+  local root = project_root()
+  local current = project_state(root).profile or ''
+  local items = { { profile = '', label = 'none (default)' } }
+  for _, p in ipairs(spring_profiles(root)) do
+    table.insert(items, { profile = p, label = p })
+  end
+  -- keep a custom value (e.g. "dev,local") selectable
+  if current ~= '' and not vim.tbl_contains(spring_profiles(root), current) then
+    table.insert(items, 2, { profile = current, label = current })
+  end
+  table.insert(items, { custom = true, label = 'Custom… (comma-separated, e.g. dev,local)' })
+
+  vim.ui.select(items, {
+    prompt = 'Spring profile · ' .. vim.fn.fnamemodify(root, ':t'),
+    format_item = function(i) return (not i.custom and i.profile == current and '● ' or '  ') .. i.label end,
+  }, function(choice)
+    if not choice then return end
+    if not choice.custom then return set_profile(root, choice.profile) end
+    vim.ui.input({ prompt = 'Spring profile(s): ', default = current }, function(input)
+      if input then set_profile(root, (input:gsub('%s+', ''))) end
     end)
   end)
 end
@@ -489,14 +654,56 @@ local function build_tool(root)
   end
 end
 
+-- Options added to every Maven/Gradle command, saved per project
+local build_options = {
+  { key = 'skip_tests', label = 'Skip tests', maven = '-DskipTests', gradle = '-x test' },
+  { key = 'offline', label = 'Offline', maven = '-o', gradle = '--offline' },
+  { key = 'update', label = 'Update snapshots / refresh dependencies', maven = '-U', gradle = '--refresh-dependencies' },
+}
+
+--- `args` plus the project's enabled build options and extra arguments.
+--- Skip tests is left out when the command itself is about running tests.
+local function with_build_options(root, tool, args)
+  local opts = project_state(root).build_opts or {}
+  local is_maven = tool.name == 'Maven'
+  local runs_tests = (' ' .. args .. ' '):find '%stest%s' ~= nil
+  local parts = { args }
+  for _, o in ipairs(build_options) do
+    if opts[o.key] and not (o.key == 'skip_tests' and runs_tests) then
+      table.insert(parts, is_maven and o.maven or o.gradle)
+    end
+  end
+  if opts.extra and opts.extra ~= '' then table.insert(parts, opts.extra) end
+  return table.concat(parts, ' ')
+end
+
+function build_running()
+  local job = build_term and build_term.job_id
+  return job ~= nil and vim.fn.jobwait({ job }, 0)[1] == -1
+end
+
+--- Stop the running Maven/Gradle command like Ctrl+C in a terminal (which also
+--- stops an app started by spring-boot:run); kill it if it ignores that.
+function stop_build()
+  if not build_running() then return notify 'No Maven/Gradle command is running' end
+  local job = build_term.job_id
+  vim.fn.chansend(job, '\3')
+  notify('Stopping ' .. build_term.display_name)
+  vim.defer_fn(function()
+    if vim.fn.jobwait({ job }, 0)[1] == -1 then vim.fn.jobstop(job) end
+  end, 5000)
+end
+
 local function run_build(root, args)
   local tool = build_tool(root)
   if not tool then return notify('No pom.xml or build.gradle in ' .. root, vim.log.levels.WARN) end
   save_project_state(root, { last_build = args })
+  args = with_build_options(root, tool, args)
 
   local env
   local jdk = project_jdk(root)
   if jdk then env = { JAVA_HOME = jdk.path, PATH = jdk.path .. '/bin:' .. vim.env.PATH } end
+  env = with_profile_env(root, env) -- reaches spring-boot:run / bootRun and tests
 
   if build_term then build_term:shutdown() end
   local Terminal = require('toggleterm.terminal').Terminal
@@ -519,9 +726,7 @@ local maven_goals = {
   { 'compile', 'Compile' },
   { 'test', 'Run all tests' },
   { 'package', 'Package' },
-  { 'package -DskipTests', 'Package (skip tests)' },
   { 'clean install', 'Clean install' },
-  { 'clean install -DskipTests', 'Clean install (skip tests)' },
   { 'verify', 'Verify' },
   { 'dependency:tree', 'Dependency tree' },
   { 'dependency:resolve -U', 'Re-download dependencies (-U)' },
@@ -530,20 +735,23 @@ local maven_goals = {
 local gradle_tasks = {
   { 'clean', 'Clean' },
   { 'build', 'Build' },
-  { 'build -x test', 'Build (skip tests)' },
   { 'test', 'Run all tests' },
   { 'dependencies', 'Dependencies' },
   { '--refresh-dependencies build', 'Refresh dependencies' },
 }
 
-local function build_menu()
+local build_menu
+function build_menu()
   local root = project_root()
   local tool = build_tool(root)
   if not tool then return notify('No pom.xml or build.gradle in ' .. root, vim.log.levels.WARN) end
   local is_maven = tool.name == 'Maven'
 
+  local st = project_state(root)
+  local opts = st.build_opts or {}
   local items = {}
-  local last = project_state(root).last_build
+  if build_running() then table.insert(items, { stop = true, label = 'Stop: ' .. build_term.display_name .. '   Ctrl+F2' }) end
+  local last = st.last_build
   if last then table.insert(items, { args = last, label = 'Re-run: ' .. last }) end
 
   for _, g in ipairs(is_maven and maven_goals or gradle_tasks) do
@@ -569,11 +777,35 @@ local function build_menu()
   end
   table.insert(items, { custom = true, label = 'Custom ' .. (is_maven and 'goal' or 'task') .. '…' })
 
+  -- Options: toggles that apply to every command above (the menu reopens after a change)
+  for _, o in ipairs(build_options) do
+    local flag = is_maven and o.maven or o.gradle
+    table.insert(items, { option = o.key, label = ('[%s] %s  (%s)'):format(opts[o.key] and 'x' or ' ', o.label, flag) })
+  end
+  table.insert(items, {
+    extra = true,
+    label = 'Extra arguments…' .. (opts.extra and opts.extra ~= '' and ('  (' .. opts.extra .. ')') or '  (e.g. -pl api -am, -T 4)'),
+  })
+
   vim.ui.select(items, {
-    prompt = tool.name .. ' (' .. vim.fn.fnamemodify(root, ':t') .. ')',
+    prompt = tool.name .. ' (' .. vim.fn.fnamemodify(root, ':t') .. ')  →  ' .. tool.cmd .. ' ' .. with_build_options(root, tool, '<goal>'),
     format_item = function(i) return i.label end,
   }, function(choice)
     if not choice then return end
+    if choice.stop then return stop_build() end
+    if choice.option then
+      opts[choice.option] = not opts[choice.option] or nil
+      save_project_state(root, { build_opts = opts })
+      return vim.schedule(build_menu)
+    end
+    if choice.extra then
+      return vim.ui.input({ prompt = 'Extra ' .. tool.name .. ' arguments: ', default = opts.extra or '' }, function(input)
+        if input == nil then return end
+        opts.extra = vim.trim(input) ~= '' and vim.trim(input) or nil
+        save_project_state(root, { build_opts = opts })
+        vim.schedule(build_menu)
+      end)
+    end
     if choice.custom then
       vim.ui.input({ prompt = tool.cmd .. ' ', default = last or '' }, function(args)
         if args and args ~= '' then run_build(root, args) end
@@ -703,7 +935,12 @@ local function menu()
   local running = dap_ok and dap.session() ~= nil
   local jdk, jdk_source = project_jdk()
   local tool = build_tool(project_root())
+  local profile = project_state().profile
   local jdtls = function(fn) return function() with_java_buffer(fn) end end
+  -- tests get the Spring profile too (overrides replace setup_dap's, so repeat the console)
+  local test_opts = function()
+    return { config_overrides = { console = 'integratedTerminal', env = with_profile_env(project_root()) } }
+  end
 
   local items = {
     { '  Run…                                Shift+F10 reruns', function() run_main(false) end },
@@ -714,12 +951,16 @@ local function menu()
     table.insert(items, { '  Re-debug ' .. short_class(last_launch.config.mainClass), function() rerun(true) end })
   end
   if running then table.insert(items, { '  Stop                                Ctrl+F2', stop }) end
+  if build_running() then
+    table.insert(items, { '  Stop ' .. build_term.display_name .. (running and '' or '   Ctrl+F2'), stop_build })
+  end
   table.insert(items, { '  Show app console / logs             <leader>dc', function() vim.cmd 'DapConsole' end })
   vim.list_extend(items, {
+    { '  Spring profile…  (' .. (profile and profile ~= '' and profile or 'none') .. ')       <leader>jp', select_profile },
     { '  Run arguments / VM options…', edit_run_args },
-    { '󰙨  Test: nearest method (debuggable)', jdtls(function() require('jdtls').test_nearest_method() end) },
-    { '󰙨  Test: this class (debuggable)', jdtls(function() require('jdtls').test_class() end) },
-    { '󰙨  Test: pick…', jdtls(function() require('jdtls').pick_test() end) },
+    { '󰙨  Test: nearest method (debuggable)', jdtls(function() require('jdtls').test_nearest_method(test_opts()) end) },
+    { '󰙨  Test: this class (debuggable)', jdtls(function() require('jdtls').test_class(test_opts()) end) },
+    { '󰙨  Test: pick…', jdtls(function() require('jdtls').pick_test(test_opts()) end) },
   })
   if tool then table.insert(items, { '  ' .. tool.name .. '…', build_menu }) end
   vim.list_extend(items, {
@@ -750,6 +991,8 @@ require('which-key').add { { '<leader>j', group = 'Java' } }
 vim.keymap.set('n', '<leader>jj', menu, { desc = 'Java: action menu' })
 vim.keymap.set('n', '<leader>jv', select_jdk, { desc = 'Java: pick Java version (JDK)' })
 vim.api.nvim_create_user_command('JavaVersion', function() select_jdk() end, { desc = 'Pick the Java version (JDK) for this project' })
+vim.keymap.set('n', '<leader>jp', select_profile, { desc = 'Java: pick Spring profile' })
+vim.api.nvim_create_user_command('SpringProfile', function() select_profile() end, { desc = 'Pick the Spring profile for this project' })
 for _, key in ipairs { '<S-F10>', '<F22>' } do -- some terminals send F22 for Shift+F10
   vim.keymap.set('n', key, function() rerun(false) end, { desc = 'Java: re-run last' })
 end
@@ -757,7 +1000,7 @@ for _, key in ipairs { '<S-F9>', '<F21>' } do
   vim.keymap.set('n', key, function() run_main(true) end, { desc = 'Java: debug…' })
 end
 for _, key in ipairs { '<C-F2>', '<F26>' } do
-  vim.keymap.set('n', key, stop, { desc = 'Stop running app / debug session' })
+  vim.keymap.set('n', key, stop, { desc = 'Stop running app / debug session / Maven command' })
 end
 
 local function jdtls_on_attach(_, bufnr)

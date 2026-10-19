@@ -54,3 +54,67 @@ function _G.LazygitOpen(file, line)
   end)
   return ''
 end
+
+-- Worktrees: each one runs in its own Neovim in its own kitty tab (see
+-- ~/.config/lazygit/worktree-open.sh, also bound to `o` in lazygit's Worktrees panel)
+local worktree_open = vim.fn.expand '~/.config/lazygit/worktree-open.sh'
+
+--- Telescope picker over `git worktree list`; <CR> jumps to (or opens) that worktree's tab
+local function pick_worktree()
+  local out = vim.system({ 'git', 'worktree', 'list', '--porcelain' }, { text = true }):wait()
+  if out.code ~= 0 then return vim.notify('Not inside a git repository', vim.log.levels.WARN) end
+
+  local worktrees, wt = {}, nil
+  for line in (out.stdout .. '\n'):gmatch '([^\n]*)\n' do
+    local key, val = line:match '^(%S+)%s?(.*)$'
+    if key == 'worktree' then
+      wt = { path = val, branch = 'detached' }
+      table.insert(worktrees, wt)
+    elseif key == 'branch' and wt then
+      wt.branch = val:gsub('^refs/heads/', '')
+    end
+  end
+
+  local cwd = vim.fn.getcwd()
+  local entry_display = require('telescope.pickers.entry_display').create {
+    separator = '  ',
+    items = { { width = 2 }, { width = 40 }, { remaining = true } },
+  }
+  require('telescope.pickers')
+    .new({}, {
+      prompt_title = 'Git Worktrees',
+      finder = require('telescope.finders').new_table {
+        results = worktrees,
+        entry_maker = function(w)
+          return {
+            value = w,
+            ordinal = w.branch .. ' ' .. w.path,
+            display = function()
+              return entry_display {
+                { w.path == cwd and '●' or ' ', 'DiagnosticOk' },
+                { w.branch, 'Identifier' },
+                { vim.fn.fnamemodify(w.path, ':~'), 'Comment' },
+              }
+            end,
+          }
+        end,
+      },
+      sorter = require('telescope.config').values.generic_sorter {},
+      attach_mappings = function(prompt_bufnr)
+        require('telescope.actions').select_default:replace(function()
+          local entry = require('telescope.actions.state').get_selected_entry()
+          require('telescope.actions').close(prompt_bufnr)
+          if not entry then return end
+          vim.system({ worktree_open, entry.value.path }, { text = true }, function(res)
+            if res.code ~= 0 then
+              vim.schedule(function() vim.notify(vim.trim(res.stderr), vim.log.levels.ERROR) end)
+            end
+          end)
+        end)
+        return true
+      end,
+    })
+    :find()
+end
+
+vim.keymap.set('n', '<leader>gw', pick_worktree, { desc = '[G]it [W]orktrees (switch tab)' })
