@@ -66,8 +66,8 @@
           "label": "",
           "type": "toggle",
           "active": true,
-          "command": "sh -c '[[ $SWAYNC_TOGGLE_STATE == true ]] && nmcli radio wifi on || nmcli radio wifi off'",
-          "update-command": "sh -c '[[ $(nmcli r wifi) == \"enabled\" ]] && echo true || echo false'"
+          "command": "sh -c '[[ $SWAYNC_TOGGLE_STATE == true ]] && iwctl device wlan0 set-property Powered on || iwctl device wlan0 set-property Powered off'",
+          "update-command": "sh -c 'iwctl device wlan0 show | grep -q \"Powered.*on\" && echo true || echo false'"
         },
         {
           "label": "",

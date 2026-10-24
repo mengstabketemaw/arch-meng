@@ -48,6 +48,16 @@ vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
     -- Only run the linter in buffers that you can modify in order to
     -- avoid superfluous noise, notably within the handy LSP pop-ups that
     -- describe the hovered symbol using Markdown.
-    if vim.bo.modifiable then lint.try_lint() end
+    if not vim.bo.modifiable then return end
+    -- Skip linters that are not installed: nvim-lint errors on a missing binary,
+    -- which aborts whatever opened the buffer (e.g. :edit of a markdown file)
+    local names = vim.tbl_filter(function(name)
+      local linter = lint.linters[name]
+      if type(linter) == 'function' then linter = linter() end
+      local cmd = linter and linter.cmd
+      if type(cmd) == 'function' then cmd = cmd() end
+      return cmd ~= nil and vim.fn.executable(cmd) == 1
+    end, lint.linters_by_ft[vim.bo.filetype] or {})
+    if #names > 0 then lint.try_lint(names) end
   end,
 })

@@ -1,0 +1,156 @@
+#!/usr/bin/env bash
+# Clone (or update) every project in a GitLab group, including subgroups.
+#
+# Usage:
+#   gitlab-clone-group                       List the groups you are a member of
+#   gitlab-clone-group <group-path-or-id> [dest-dir]
+#                                            Clone all projects in that group
+#
+# Config: GITLAB_URL and GITLAB_TOKEN are read from
+#   ~/.config/gitlab-clone-group/config (kept out of the dotfiles repo).
+#
+# Environment:
+#   GITLAB_TOKEN      Personal access token with read_api + read_repository (required)
+#   GITLAB_URL        GitLab base URL (default: https://gitlab.com)
+#   CLONE_PROTOCOL    https | ssh (default: https; https authenticates with GITLAB_TOKEN)
+#   INCLUDE_ARCHIVED  1 to also clone archived projects (default: 0)
+#   UPDATE_EXISTING   1 to run `git pull --ff-only` in already-cloned repos (default: 1)
+#   FLAT              1 to clone everything into dest-dir directly instead of
+#                     mirroring the subgroup structure (default: 0)
+#   JOBS              Number of parallel clones (default: 4)
+
+set -euo pipefail
+
+CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/gitlab-clone-group/config"
+# shellcheck source=/dev/null
+[[ -f "$CONFIG_FILE" ]] && source "$CONFIG_FILE"
+
+GITLAB_URL="${GITLAB_URL:-https://gitlab.com}"
+GITLAB_URL="${GITLAB_URL%/}"
+CLONE_PROTOCOL="${CLONE_PROTOCOL:-https}"
+INCLUDE_ARCHIVED="${INCLUDE_ARCHIVED:-0}"
+UPDATE_EXISTING="${UPDATE_EXISTING:-1}"
+FLAT="${FLAT:-0}"
+JOBS="${JOBS:-4}"
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'
+  exit 0
+fi
+
+if [[ -z "${GITLAB_TOKEN:-}" ]]; then
+  echo "error: GITLAB_TOKEN is not set" >&2
+  exit 1
+fi
+
+for cmd in curl jq git; do
+  command -v "$cmd" >/dev/null || { echo "error: $cmd is required" >&2; exit 1; }
+done
+
+# No group given: list every group the token's user is a member of.
+if [[ $# -lt 1 ]]; then
+  page=1
+  printf '%-40s %s\n' "GROUP PATH" "NAME"
+  while :; do
+    body="$(curl -sSf --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+      "$GITLAB_URL/api/v4/groups?min_access_level=10&per_page=100&page=$page&order_by=path&sort=asc")" \
+      || { echo "error: API request failed (check GITLAB_URL and token)" >&2; exit 1; }
+    [[ "$(jq 'length' <<<"$body")" -eq 0 ]] && break
+    jq -r '.[] | [.full_path, .name] | @tsv' <<<"$body" \
+      | while IFS=$'\t' read -r path name; do printf '%-40s %s\n' "$path" "$name"; done
+    page=$((page + 1))
+  done
+  echo
+  echo "Clone one with: $(basename "$0") <group-path> [dest-dir]"
+  exit 0
+fi
+
+GROUP="$1"
+DEST="${2:-.}"
+# Group paths like "parent/child" must be URL-encoded for the API.
+GROUP_ENC="$(jq -rn --arg g "$GROUP" '$g|@uri')"
+
+archived_param=""
+[[ "$INCLUDE_ARCHIVED" == "1" ]] || archived_param="&archived=false"
+
+# Fetch all pages of the group's projects (including subgroups).
+fetch_projects() {
+  local page=1 body
+  while :; do
+    body="$(curl -sSf --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+      "$GITLAB_URL/api/v4/groups/$GROUP_ENC/projects?include_subgroups=true&per_page=100&page=$page&order_by=path&sort=asc$archived_param")" \
+      || { echo "error: API request failed (check GITLAB_URL, token, and group '$GROUP')" >&2; exit 1; }
+    [[ "$(jq 'length' <<<"$body")" -eq 0 ]] && break
+    jq -r --arg proto "$CLONE_PROTOCOL" \
+      '.[] | [.path_with_namespace, (if $proto == "https" then .http_url_to_repo else .ssh_url_to_repo end)] | @tsv' \
+      <<<"$body"
+    page=$((page + 1))
+  done
+}
+
+# Path of the group itself, so local dirs are relative to it.
+GROUP_FULL_PATH="$(curl -sSf --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+  "$GITLAB_URL/api/v4/groups/$GROUP_ENC?with_projects=false" | jq -r '.full_path')" \
+  || { echo "error: could not find group '$GROUP'" >&2; exit 1; }
+
+mkdir -p "$DEST"
+
+clone_one() {
+  local ns_path="$1" url="$2" rel target err
+  if [[ "$FLAT" == "1" ]]; then
+    rel="${ns_path##*/}"
+  else
+    rel="${ns_path#"$GROUP_FULL_PATH"/}"
+  fi
+  target="$DEST/$rel"
+
+  if [[ -d "$target/.git" ]]; then
+    if [[ "$UPDATE_EXISTING" == "1" ]]; then
+      if err="$(git -C "$target" pull --ff-only -q 2>&1)"; then
+        echo "updated  $rel"
+      else
+        echo "FAILED   $rel (pull): $(tail -n 1 <<<"$err")" >&2
+        return 1
+      fi
+    else
+      echo "skipped  $rel"
+    fi
+  else
+    mkdir -p "$(dirname "$target")"
+    if err="$(git clone -q "$url" "$target" 2>&1)"; then
+      echo "cloned   $rel"
+    else
+      # "remote:" lines carry GitLab's reason (e.g. no permission); fall back to git's last line.
+      echo "FAILED   $rel (clone): $(grep -m1 '^remote:' <<<"$err" || tail -n 1 <<<"$err")" >&2
+      return 1
+    fi
+  fi
+}
+export -f clone_one
+export DEST FLAT UPDATE_EXISTING GROUP_FULL_PATH
+
+# For https, pass the token as a per-command auth header so it is never written
+# to .git/config, and never fall back to an interactive password prompt.
+if [[ "$CLONE_PROTOCOL" == "https" ]]; then
+  export GIT_TERMINAL_PROMPT=0
+  export GIT_CONFIG_COUNT=1
+  export GIT_CONFIG_KEY_0="http.$GITLAB_URL/.extraHeader"
+  export GIT_CONFIG_VALUE_0="Authorization: Basic $(printf 'oauth2:%s' "$GITLAB_TOKEN" | base64 -w0)"
+fi
+
+projects="$(fetch_projects)"
+if [[ -z "$projects" ]]; then
+  echo "No projects found in group '$GROUP_FULL_PATH'."
+  exit 0
+fi
+
+total="$(wc -l <<<"$projects")"
+echo "Found $total project(s) in '$GROUP_FULL_PATH' -> $DEST"
+
+# Run clones in parallel; non-zero exit if any failed.
+status=0
+printf '%s\n' "$projects" \
+  | xargs -P "$JOBS" -L 1 bash -c 'clone_one "$0" "$1"' || status=$?
+
+[[ $status -eq 0 ]] && echo "Done." || echo "Done, with failures." >&2
+exit "$status"

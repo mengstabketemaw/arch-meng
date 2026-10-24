@@ -1,0 +1,98 @@
+/* Cheatsheet (~/.config/cheatsheet/cheatsheet, Super+N) */
+
+configuration {
+    font:                        "Fira Sans 11";
+    show-icons:                  false;
+    hover-select:                false;
+    me-select-entry:             "";
+    me-accept-entry:             "MousePrimary";
+}
+
+@theme "~/.config/rofi/colors.rasi"
+
+window {
+    width:                       60em;
+    location:                    center;
+    anchor:                      center;
+    transparency:                "real";
+    border:                      2px;
+    border-color:                @primary;
+    border-radius:               1.2em;
+    background-color:            @surface-container;
+}
+
+mainbox {
+    orientation:                 vertical;
+    children:                    [ "inputbar", "listview" ];
+    padding:                     1.2em;
+    spacing:                     1em;
+    background-color:            transparent;
+}
+
+inputbar {
+    children:                    [ "textbox-prompt-colon", "entry" ];
+    border-radius:               2em;
+    border:                      1px;
+    border-color:                @outline-variant;
+    background-color:            @surface-container-high;
+    padding:                     0.8em 1em;
+}
+
+textbox-prompt-colon {
+    expand:                      false;
+    str:                         "  ";
+    text-color:                  @primary;
+    background-color:            transparent;
+}
+
+entry {
+    placeholder:                 "Search: telescope vertical split, resize, tab…";
+    placeholder-color:           @outline;
+    text-color:                  @on-surface;
+    background-color:            transparent;
+    cursor:                      text;
+    cursor-color:                @primary;
+}
+
+listview {
+    lines:                       8;
+    columns:                     1;
+    fixed-height:                true;
+    scrollbar:                   false;
+    spacing:                     0.3em;
+    cycle:                       true;
+    background-color:            transparent;
+}
+
+element {
+    padding:                     0.6em 1em;
+    border-radius:               0.8em;
+    background-color:            transparent;
+    text-color:                  @on-surface;
+}
+
+element normal.normal, element alternate.normal {
+    background-color:            transparent;
+}
+
+element selected.normal {
+    background-color:            @primary-container;
+    text-color:                  @on-primary-container;
+}
+
+element-text {
+    background-color:            transparent;
+    text-color:                  inherit;
+    highlight:                   bold underline;
+    vertical-align:              0.5;
+}
+
+message {
+    background-color:            transparent;
+}
+
+textbox {
+    text-color:                  @outline;
+    background-color:            transparent;
+    horizontal-align:            0.5;
+}

@@ -175,7 +175,7 @@ local function on_start(session, err)
     (session.config.noDebug and '▶ Running ' or ' Debugging ') .. session.config.name:gsub('^%a+ ', '')
       .. '\nOutput: console at the bottom  (<leader>dc toggles it)',
     vim.log.levels.INFO,
-    { title = 'Java' }
+    { title = session.config.type == 'coreclr' and '.NET' or 'Java' }
   )
 end
 dap.listeners.after.launch['dapui_config'] = on_start

@@ -6,7 +6,9 @@ export PATH=$PATH:$HOME/.cargo/bin:$HOME/.local/bin
 export ZSH="$HOME/.oh-my-zsh"
 export PATH=/home/meng/.opencode/bin:$PATH
 export PATH="$HOME/.npm-global/bin:$PATH"
-
+export PATH="$HOME/arch-meng/scripts:$PATH"
+export PATH="/home/meng/.local/bin:$PATH"
+export PATH="$PATH:$HOME/.dotnet/tools"
 # =====================================================
 #  OH-MY-ZSH PLUGINS
 # =====================================================
@@ -82,7 +84,6 @@ lazygit() {
 
 
 # Added by Antigravity CLI installer
-export PATH="/home/meng/.local/bin:$PATH"
 
 . "$HOME/.local/share/../bin/env"
 

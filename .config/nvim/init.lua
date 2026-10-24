@@ -669,7 +669,12 @@ do
   }
 
   -- Automatically install LSPs and related tools to stdpath for Neovim
-  require('mason').setup {}
+  require('mason').setup {
+    registries = {
+      'github:mason-org/mason-registry',
+      'github:Crashdummyy/mason-registry', -- up-to-date Roslyn C# server (same as VS Code)
+    },
+  }
 
   -- Ensure the servers and tools above are installed
   --
@@ -684,6 +689,9 @@ do
     'jdtls',
     'java-debug-adapter',
     'java-test',
+    -- C# tools (Roslyn LSP used by roslyn.nvim + debugger), see lua/custom/plugins/dotnet.lua
+    'roslyn',
+    'netcoredbg',
   })
 
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }

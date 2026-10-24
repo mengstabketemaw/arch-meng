@@ -171,7 +171,7 @@
     "tooltip-format-ethernet": " {ifname}\nIP: {ipaddr}\n up: {bandwidthUpBits} down: {bandwidthDownBits}",
     "tooltip-format-disconnected": "Disconnected",
     "max-length": 50,
-    "on-click": "kitty $(which nmtui)",
+    "on-click": "~/.config/hypr/scripts/wifi-menu.sh",
   },
   // Battery
   "battery": {
