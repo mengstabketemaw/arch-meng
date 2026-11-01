@@ -5,9 +5,11 @@ Shown with rofi (theme: ~/.config/rofi/config-cheatsheet.rasi), bound to
 Super+N; running it again while it is open closes it.
 
 Every table row becomes one entry: key + action, with its section below.
-Headings give the section ("## 6. Open Files in Splits" + "### Telescope" ->
-"Open Files in Splits › Telescope"), so typing "telescope vertical split"
-finds that row. Enter copies the key/command to the clipboard.
+Headings give the section ("# Git" + "## 2. History" + "### Telescope" ->
+"Git › History › Telescope"), so typing "git history telescope" finds that
+row. rofi needs every typed word to match, so an optional third column holds
+extra search terms (synonyms) that are matched but not shown. Enter copies the
+key/command to the clipboard.
 """
 
 import html
@@ -52,9 +54,11 @@ def heading(text):
 
 def rows():
     for path in sorted(SHEETS.glob("*.md")):
-        section = sub = ""
+        title = section = sub = ""
         for line in path.read_text().splitlines():
-            if line.startswith("### "):
+            if line.startswith("# "):
+                title = heading(line[2:])
+            elif line.startswith("### "):
                 sub = heading(line[4:])
             elif line.startswith("## "):
                 section, sub = heading(line[3:]), ""
@@ -63,7 +67,8 @@ def rows():
                 # skip the header row and the |---|---| separator
                 if len(cells) < 2 or re.fullmatch(r"[\s:|-]*", "".join(cells)) or cells[1] == "Action":
                     continue
-                yield (f"{section} › {sub}" if sub else section), cells[0], cells[1]
+                where = " › ".join(p for p in (title, section, sub) if p)
+                yield where, cells[0], cells[1], cells[2] if len(cells) > 2 else ""
 
 
 def accent():
@@ -104,7 +109,8 @@ def main():
     entries = [
         f"{key_open}{html.escape(key)}</span>    {html.escape(action)}\n"
         f"<span size='small' alpha='60%'>{html.escape(section)}</span>"
-        for section, key, action in items
+        + (f"\0meta\x1f{terms}" if terms else "")  # hidden search terms
+        for section, key, action, terms in items
     ]
     picked = subprocess.run(
         ["rofi", "-dmenu", "-i", "-markup-rows", "-no-custom", "-eh", "2", "-sep", SEP,

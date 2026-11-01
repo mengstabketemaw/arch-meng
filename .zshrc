@@ -66,9 +66,6 @@ alias ls='eza -a --icons=always'
 alias ll='eza -al --icons=always'
 alias lt='eza -a --tree --level=1 --icons=always'
 
-# System
-alias update-grub='sudo grub-mkconfig -o /boot/grub/grub.cfg'
-
 # Lazygit
 # The staging view (opening a file) ignores delta and paints diffs with the
 # terminal's ANSI red/green, which matugen sets to pink/near-white. Swap in

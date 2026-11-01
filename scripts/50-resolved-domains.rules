@@ -1,0 +1,9 @@
+// Let local wheel users change systemd-resolved search/routing domains
+// without a password (used by .config/hypr/scripts/vpn-dns-split.sh).
+// Install: sudo install -m644 scripts/50-resolved-domains.rules /etc/polkit-1/rules.d/
+polkit.addRule(function (action, subject) {
+    if (action.id == "org.freedesktop.resolve1.set-domains" &&
+        subject.isInGroup("wheel") && subject.local && subject.active) {
+        return polkit.Result.YES;
+    }
+});

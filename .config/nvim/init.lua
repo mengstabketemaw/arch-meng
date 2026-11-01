@@ -287,6 +287,7 @@ do
     spec = {
       { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
       { '<leader>t', group = '[T]oggle' },
+      { '<leader>g', group = '[G]it', mode = { 'n', 'v' } },
       { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
       { 'gr', group = 'LSP Actions', mode = { 'n' } },
     },
@@ -446,6 +447,15 @@ do
   vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
   vim.keymap.set('n', '<leader>sc', builtin.commands, { desc = '[S]earch [C]ommands' })
   vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+
+  -- Git pickers (preview shows the diff, <CR> checks out / applies)
+  vim.keymap.set('n', '<leader>gh', builtin.git_bcommits, { desc = '[G]it file [H]istory (commits of this file)' })
+  vim.keymap.set('v', '<leader>gh', builtin.git_bcommits_range, { desc = '[G]it [H]istory of selected lines' })
+  vim.keymap.set('n', '<leader>gc', builtin.git_commits, { desc = '[G]it [C]ommits (whole repo)' })
+  vim.keymap.set('n', '<leader>gs', builtin.git_status, { desc = '[G]it [S]tatus (changed files)' })
+  vim.keymap.set('n', '<leader>gb', builtin.git_branches, { desc = '[G]it [B]ranches' })
+  vim.keymap.set('n', '<leader>gS', builtin.git_stash, { desc = '[G]it [S]tash' })
+  vim.keymap.set('n', '<leader>gf', builtin.git_files, { desc = '[G]it tracked [F]iles' })
 
   -- Add Telescope-based LSP pickers when an LSP attaches to a buffer.
   -- If you later switch picker plugins, this is where to update these mappings.

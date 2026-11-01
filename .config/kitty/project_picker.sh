@@ -7,8 +7,25 @@ if [ ! -d "$HOME/projects" ]; then
   exit 1
 fi
 
+# A folder holding only sub-folders is a group, not a project: list its
+# children instead (recursively). Anything with a file or a .git is a project.
+list_projects() {
+  local dir="$1" depth="$2" child
+  for child in "$dir"/*/; do
+    [ -d "$child" ] || continue
+    child="${child%/}"
+    if [ "$depth" -lt 5 ] && [ ! -e "$child/.git" ] &&
+       [ -n "$(find "$child" -mindepth 1 -maxdepth 1 -not -name '.*' -print -quit)" ] &&
+       [ -z "$(find "$child" -mindepth 1 -maxdepth 1 -not -type d -print -quit)" ]; then
+      list_projects "$child" $((depth + 1))
+    else
+      echo "$child"
+    fi
+  done
+}
+
 run_fzf() {
-  find "$HOME/projects" -maxdepth 1 -mindepth 1 -type d | sed "s|^$HOME|~|" | fzf \
+  list_projects "$HOME/projects" 1 | sed "s|^$HOME|~|" | fzf \
       --ansi \
       --reverse \
       --border=rounded \
