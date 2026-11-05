@@ -438,3 +438,19 @@ window#waybar.empty #window {
     -gtk-icon-effect: highlight;
     background-color: #eb4d4b;
 }
+
+/* -----------------------------------------------------
+ * Day planner (timlo)
+ * ----------------------------------------------------- */
+
+#custom-planner {
+    font-size: 14px;
+    color: @textcolor;
+    margin: 0px 15px 0px 0px;
+}
+#custom-planner.ending-soon { color: #f5a97f; }
+#custom-planner.free { color: #8bd5ca; }
+#custom-planner.done { color: #a6da95; }
+#custom-planner.skipped,
+#custom-planner.empty,
+#custom-planner.offline { opacity: 0.6; }

@@ -127,6 +127,7 @@ MEDIA_PKGS=(
 # -------------------------------------------------
 APPS_PKGS=(
     nautilus
+    nautilus-python
     chromium
     flatpak
 )

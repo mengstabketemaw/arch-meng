@@ -1,0 +1,190 @@
+# SwayNC blur
+layerrule = blur on, match:namespace swaync-control-center
+layerrule = blur on, match:namespace swaync-notification-window
+layerrule = ignore_alpha 0.5, match:namespace swaync-control-center
+layerrule = ignore_alpha 0.5, match:namespace swaync-notification-window
+
+windowrule {
+    name = pavucontrol
+    match:class = (.*org.pulseaudio.pavucontrol.*)
+    float = true
+    center = true
+    pin = true
+    size = 700 600
+}
+
+windowrule {
+    name = waypaper
+    match:class = (.*waypaper.*)
+    float = true
+    center = true
+    pin = true
+    size = 900 700
+}
+
+windowrule {
+    name = newelle
+    match:class = (io.github.qwersyk.Newelle)
+    float = true
+    center = true
+    pin = true
+    size = 1000 700
+}
+
+windowrule {
+    name = calendar
+    match:class = (calendar)
+    float = true
+    move = 21 76
+    pin = true
+    size = 400 400
+}
+
+windowrule {
+    name = sidebar
+    match:class = (sidebar)
+    float = true
+    move = monitor_w-window_w-21 76
+    pin = true
+    size = 400 660
+}
+
+windowrule {
+    name = blueman-manager
+    match:class = (blueman-manager)
+    float = true
+    center = true
+    size = 800 600
+}
+
+windowrule {
+    name = nwg-look
+    match:class = (nwg-look)
+    float = true
+    center = true
+    size = 700 600
+}
+
+windowrule {
+    name = nwg-displays
+    match:class = (nwg-displays)
+    float = true
+    center = true
+    size = 900 600
+}
+
+windowrule {
+    name = missioncenter
+    match:class = (io.missioncenter.MissionCenter)
+    float = true
+    center = true
+    pin = true
+    size = 900 600
+}
+
+windowrule {
+    name = gnome-calculator
+    match:class = (org.gnome.Calculator)
+    float = true
+    center = true
+    size = 700 600
+}
+
+windowrule {
+    name = hyprland-share-picker
+    match:class = (hyprland-share-picker)
+    float = true
+    pin = true
+    center = true
+    size = 600 400
+}
+
+windowrule {
+    name = nm-connection-editor
+    match:class = (nm-connection-editor)
+    float = true
+    center = true
+    size = 800 700
+}
+
+windowrule {
+    name = Picture-in-Picture
+    match:title = ^([Pp]icture[-\s]?[Ii]n[-\s]?[Pp]icture)(.*)$
+    float = true
+    pin = true
+    center = true
+}
+
+windowrule {
+    name = dotfiles-floating
+    match:class = (dotfiles-floating)
+    float = true
+    center = true
+    size = 1000 700
+}
+
+windowrule {
+    name = dotfiles-sidepad
+    match:class = (dotfiles-sidepad)
+    float = true
+    pin = true
+    center = true
+    size = 1000 700
+}
+
+windowrule {
+    name = bruno-on-workspace-3
+    match:class = (bruno)
+    workspace = 3
+}
+
+windowrule {
+    name = dbeaver-on-workspace-10
+    match:class = (DBeaver|java)
+    workspace = 10 silent
+}
+
+windowrule {
+    name = chromium-on-workspace-2
+    match:class = (chromium)
+    workspace = 2
+    focus_on_activate = true
+}
+
+windowrule {
+    name = jetbrains-idea-on-workspace-1
+    match:class = (jetbrains-idea)
+    workspace = 1
+}
+
+windowrule {
+    name =fun-on-workspace-6
+    match:class = (teams-for-linux|org.telegram.desktop|Spotify)
+    workspace = 6 silent
+}
+
+windowrule {
+    name = cava
+    match:class = (cava)
+
+    float = on
+    size = monitor_w 120
+    move = 0 monitor_h-120
+
+    pin = on
+
+    border_size = 0
+    rounding = 0
+    
+    no_focus = on
+    no_follow_mouse = on
+    no_initial_focus = on
+}
+
+windowrule {
+    name = scratch
+    match:class = (scratch)
+    float = true
+    center = true
+    size = 1000 700
+}

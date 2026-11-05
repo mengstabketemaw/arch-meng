@@ -24,25 +24,50 @@ list_projects() {
   done
 }
 
+# Extra folders outside ~/projects that should always be listed
+EXTRA_PROJECTS=("$HOME/arch-meng")
+
 run_fzf() {
-  list_projects "$HOME/projects" 1 | sed "s|^$HOME|~|" | fzf \
+  {
+    for extra in "${EXTRA_PROJECTS[@]}"; do [ -d "$extra" ] && echo "$extra"; done
+    list_projects "$HOME/projects" 1
+  } | sed "s|^$HOME|~|" | fzf \
       --ansi \
+      --print-query \
+      --expect=alt-enter \
       --reverse \
       --border=rounded \
       --margin=30%,30% \
       --padding=1 \
-      --header="Open Project" \
+      --header="Open Project  (no match + Enter / Alt+Enter: create ~/projects/<query>)" \
       --header-first \
       --color="border:#82a1f1,header:#82a1f1,pointer:#f43f5e,prompt:#38bdf8"
 }
 
-# Capture the selection safely
-selected_dir=$(run_fzf)
+# fzf output: line 1 = query, line 2 = key pressed (empty or alt-enter),
+# line 3 = selected entry (empty when nothing matched)
+output=$(run_fzf)
+status=$?
+# 130 = Escape / Ctrl-C: just close the overlay
+[ "$status" -eq 130 ] && exit 0
 
-# Escape makes fzf exit with no output; the overlay then just closes
-[ -z "$selected_dir" ] && exit 0
+query=$(sed -n 1p <<<"$output")
+key=$(sed -n 2p <<<"$output")
+selected_dir=$(sed -n 3p <<<"$output")
 
-full_path="${selected_dir/#\~/$HOME}"
+if [ "$key" = "alt-enter" ] || [ -z "$selected_dir" ]; then
+  # Create a new project named after the query (sub-paths like group/name ok)
+  query="${query#"${query%%[![:space:]]*}"}"; query="${query%"${query##*[![:space:]]}"}"
+  [ -z "$query" ] && exit 0
+  case "$query" in
+    /*|*..*) echo "Invalid project name: $query"; sleep 2; exit 1 ;;
+  esac
+  full_path="$HOME/projects/$query"
+  mkdir -p "$full_path" || { sleep 2; exit 1; }
+  [ -e "$full_path/.git" ] || git -C "$full_path" init -q
+else
+  full_path="${selected_dir/#\~/$HOME}"
+fi
 project_name=$(basename "$full_path")
 
 # Open the project in a new tab titled after the folder, with Neovim running

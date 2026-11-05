@@ -17,6 +17,10 @@ for dir in "$DOTFILES/.config"/*/; do
     ln -sfn "$dir" "$target"
 done
 
+echo ":: Linking Nautilus extensions..."
+mkdir -p "$HOME/.local/share/nautilus-python"
+ln -sfn "$DOTFILES/.local/share/nautilus-python/extensions" "$HOME/.local/share/nautilus-python/extensions"
+
 echo ":: Setting up oh-my-zsh..."
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended 2>/dev/null || true

@@ -107,6 +107,16 @@
               "Fcitx",
     ]
   },
+  // Day planner (timlo)
+  "custom/planner": {
+    "exec": "plannerd waybar",
+    "return-type": "json",
+    "restart-interval": 5,
+    "tooltip": true,
+    "on-click": "timlo",
+    "on-click-right": "plannerd done",
+    "on-click-middle": "plannerd skip"
+  },
   // Clock
   "clock": {
     "format": "{:%I:%M %p, %a %b %d}",
