@@ -68,7 +68,17 @@ if [ "$key" = "alt-enter" ] || [ -z "$selected_dir" ]; then
 else
   full_path="${selected_dir/#\~/$HOME}"
 fi
+full_path="${full_path%/}"
 project_name=$(basename "$full_path")
+
+# If a tab for this project is already open (tagged with var wt=<path> at
+# launch), jump to it instead of opening a duplicate
+existing_id=$(kitty @ ls 2>/dev/null | jq -r --arg p "$full_path" '
+  [.[].tabs[].windows[] | select(.user_vars.wt == $p) | .id] | first // empty')
+if [ -n "$existing_id" ]; then
+  kitty @ focus-window --match "id:$existing_id"
+  exit 0
+fi
 
 # Open the project in a new tab titled after the folder, with Neovim running
 # nvim runs inside an interactive zsh (so .zshrc PATH/env apply); quitting it
