@@ -1,0 +1,38 @@
+# swaync with a patch that renders HTML-ish notification bodies properly.
+# Upstream only understands <b>/<i>/<u>; anything else (e.g. KDE Connect's
+# <br/>) makes it fall back to showing raw tags. See swaync-html-markup.patch.
+#
+# Build & install:  cd pkgbuilds/swaync-html && makepkg -si
+# On a new upstream release: bump pkgver, run `updpkgsums`, rebuild.
+
+pkgname=swaync-html
+_pkgname=SwayNotificationCenter
+pkgver=0.12.6
+pkgrel=1
+pkgdesc="Notification daemon with a GTK GUI for notifications and the control center (renders <br/>, <p>, <a>, &nbsp;)"
+arch=('x86_64')
+url="https://github.com/ErikReider/SwayNotificationCenter"
+license=('GPL-3.0-only')
+depends=('gtk4' 'gtk4-layer-shell' 'libadwaita' 'glib2' 'libgee' 'json-glib' 'libpulse' 'granite7')
+makedepends=('meson' 'vala' 'scdoc' 'sassc' 'blueprint-compiler')
+optdepends=('gvfs: Get album art in MPRIS widget')
+provides=("swaync=$pkgver")
+conflicts=('swaync')
+source=("$_pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz"
+        "swaync-html-markup.patch")
+sha256sums=('0c844eb5c9524f924495bd4145e5db575096de36f3ec87fb37e4c1ed6eacb897'
+            '2a3906e25dd9fe7cfeed4c329fbdd6ff2432583b1bc3a7911388e470216763ed')
+
+prepare() {
+  cd "$_pkgname-$pkgver"
+  patch -Np1 -i "$srcdir/swaync-html-markup.patch"
+}
+
+build() {
+  arch-meson "$_pkgname-$pkgver" build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

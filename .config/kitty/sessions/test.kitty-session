@@ -1,0 +1,47 @@
+
+new_tab
+layout fat
+enabled_layouts fat,grid,horizontal,splits,stack,tall,vertical
+set_layout_state {"main_bias": [0.5, 0.5], "biased_map": {}, "opts": {"full_size": 1, "bias": 50, "mirrored": "n"}, "class": "Fat", "all_windows": {"active_group_idx": 0, "active_group_history": [1], "window_groups": [{"id": 1, "window_ids": [1]}]}}
+cd /home/meng
+
+launch 'kitty-unserialize-data={"id": 1}'
+focus
+
+new_tab arif-gw
+layout fat
+enabled_layouts fat,grid,horizontal,splits,stack,tall,vertical
+set_layout_state {"main_bias": [0.5, 0.5], "biased_map": {}, "opts": {"full_size": 1, "bias": 50, "mirrored": "n"}, "class": "Fat", "all_windows": {"active_group_idx": 0, "active_group_history": [2], "window_groups": [{"id": 2, "window_ids": [3]}]}}
+cd /home/meng/projects/arif-gw
+
+launch 'kitty-unserialize-data={"id": 3}' --var=wt=/home/meng/projects/arif-gw zsh -ic 'nvim; exec zsh'
+focus
+
+new_tab arifpay-remittance-backend
+layout fat
+enabled_layouts fat,grid,horizontal,splits,stack,tall,vertical
+set_layout_state {"main_bias": [0.5, 0.5], "biased_map": {}, "opts": {"full_size": 1, "bias": 50, "mirrored": "n"}, "class": "Fat", "all_windows": {"active_group_idx": 0, "active_group_history": [3], "window_groups": [{"id": 3, "window_ids": [5]}]}}
+cd /home/meng/projects/arifpay-remittance-backend
+
+launch 'kitty-unserialize-data={"id": 5}' --var=wt=/home/meng/projects/arifpay-remittance-backend zsh -ic 'nvim; exec zsh'
+focus
+
+new_tab arch-meng
+layout fat
+enabled_layouts fat,grid,horizontal,splits,stack,tall,vertical
+set_layout_state {"main_bias": [0.5, 0.5], "biased_map": {}, "opts": {"full_size": 1, "bias": 50, "mirrored": "n"}, "class": "Fat", "all_windows": {"active_group_idx": 0, "active_group_history": [4], "window_groups": [{"id": 4, "window_ids": [7]}]}}
+cd /home/meng/arch-meng
+
+launch 'kitty-unserialize-data={"id": 7}' --var=wt=/home/meng/arch-meng zsh -ic 'nvim; exec zsh'
+focus
+
+new_tab hibret-core-banking
+layout fat
+enabled_layouts fat,grid,horizontal,splits,stack,tall,vertical
+set_layout_state {"main_bias": [0.5, 0.5], "biased_map": {}, "opts": {"full_size": 1, "bias": 50, "mirrored": "n"}, "class": "Fat", "all_windows": {"active_group_idx": 0, "active_group_history": [5], "window_groups": [{"id": 5, "window_ids": [9]}]}}
+cd /home/meng/projects/remittance-ms/hibret-core-banking
+
+launch 'kitty-unserialize-data={"id": 9}' --var=wt=/home/meng/projects/remittance-ms/hibret-core-banking zsh -ic 'nvim; exec zsh'
+focus
+
+focus_tab 3

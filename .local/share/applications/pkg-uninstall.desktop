@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Uninstall
+GenericName=Package Remover
+Comment=Remove installed applications together with their unused dependencies
+Exec=sh -c "\\$HOME/.config/hypr/scripts/pkg-manager.sh uninstall"
+Icon=edit-delete
+Terminal=false
+Categories=System;Settings;PackageManager;
+Keywords=uninstall;remove;package;pacman;delete;software;

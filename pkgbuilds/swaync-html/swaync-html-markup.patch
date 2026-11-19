@@ -1,0 +1,47 @@
+diff --color -ruN a/src/notification/notification.vala b/src/notification/notification.vala
+--- a/src/notification/notification.vala	2026-11-07 16:57:36.024431131 +0300
++++ b/src/notification/notification.vala	2026-11-07 16:57:45.588088970 +0300
+@@ -304,6 +304,31 @@
+             }
+         }
+ 
++        private static string html_to_pango (string input) {
++            if (input.index_of_char ('<') < 0 && input.index_of_char ('&') < 0) {
++                return input;
++            }
++            string text = input;
++            try {
++                var flags = RegexCompileFlags.CASELESS;
++                // Line breaks and paragraphs
++                text = new Regex ("<br\\s*/?>", flags).replace (text, -1, 0, "\n");
++                text = new Regex ("</p>\\s*<p(\\s[^>]*)?>", flags).replace (text, -1, 0, "\n\n");
++                text = new Regex ("</?(p|div)(\\s[^>]*)?>", flags).replace (text, -1, 0, "");
++                // Links: keep the text, drop the tag (Pango has no <a>)
++                text = new Regex ("<a(\\s[^>]*)?>|</a>", flags).replace (text, -1, 0, "");
++                // HTML-only formatting tags -> Pango equivalents
++                text = new Regex ("<(/?)strong>", flags).replace (text, -1, 0, "<\\1b>");
++                text = new Regex ("<(/?)em>", flags).replace (text, -1, 0, "<\\1i>");
++                // HTML entities that XML/Pango doesn't define
++                text = new Regex ("&nbsp;", flags).replace_literal (text, -1, 0, " ");
++            } catch (RegexError e) {
++                stderr.printf ("html_to_pango: %s\n", e.message);
++                return input;
++            }
++            return text.strip ();
++        }
++
+         private void set_body () {
+             string text = param.body ?? "";
+ 
+@@ -362,6 +387,11 @@
+                 }
+             }
+ 
++            // Convert common HTML that Pango doesn't understand (KDE Connect,
++            // Chromium, etc. send <br/>, <p>, <a href>, &nbsp;) into
++            // plain text / Pango-compatible markup.
++            text = html_to_pango (text);
++
+             // Markup
+             try {
+                 Pango.AttrList ?attr = null;

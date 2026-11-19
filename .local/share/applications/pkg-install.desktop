@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Install
+GenericName=Package Installer
+Comment=Search and install packages from the Arch repos (and AUR)
+Exec=sh -c "\\$HOME/.config/hypr/scripts/pkg-manager.sh install"
+Icon=system-software-install
+Terminal=false
+Categories=System;Settings;PackageManager;
+Keywords=install;package;pacman;aur;yay;software;

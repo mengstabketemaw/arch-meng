@@ -1,0 +1,285 @@
+/* Clean, readable swaync theme.
+ * Builds on swaync's default stylesheet (no `all: unset`) and only overrides
+ * colours/sizes. Colours come from the matugen-generated colors.css. */
+@import '../../colors.css';
+
+@define-color card      alpha(@surface_container_high, 0.97);
+@define-color card_hi   @surface_container_highest;
+@define-color card_low  @surface_container_low;
+@define-color text      @on_surface;
+@define-color text_dim  @on_surface_variant;
+@define-color accent    @primary;
+@define-color btn       @secondary_container;
+@define-color btn_text  @on_secondary_container;
+
+:root {
+  --notification-icon-size: 52px;
+  --notification-group-icon-size: 28px;
+  --border-radius: 14px;
+  --font-size-summary: 16px;
+  --font-size-body: 14.5px;
+}
+
+* {
+  font-family: "Fira Sans", "Noto Sans", sans-serif;
+  text-shadow: none;
+}
+
+/* ---------- Notification cards (popups + control center) ---------- */
+.notification-row { outline: none; }
+
+.notification-row .notification-background {
+  padding: 6px 10px;
+}
+
+.notification-row .notification-background .notification {
+  background: @card;
+  color: @text;
+  border: 1px solid @outline_variant;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  padding: 6px;
+}
+
+.notification-row .notification-background .notification.critical {
+  border: 2px solid @error;
+}
+
+.notification-row .notification-background .notification.low {
+  opacity: 0.92;
+}
+
+.notification-row .notification-background .notification .notification-default-action {
+  padding: 8px;
+  color: @text;
+}
+
+.notification-row .notification-background .notification .notification-default-action:hover {
+  background: alpha(@card_hi, 0.8);
+}
+
+.notification-content .image {
+  border-radius: 10px;
+  margin: 2px 10px 2px 2px;
+}
+
+.notification-content .text-box .summary {
+  color: @text;
+  font-size: var(--font-size-summary);
+  font-weight: 700;
+}
+
+.notification-content .text-box .time {
+  color: @text_dim;
+  font-size: 12px;
+  font-weight: 500;
+  margin-right: 34px;
+}
+
+.notification-content .text-box .body {
+  color: @text_dim;
+  font-size: var(--font-size-body);
+  font-weight: 400;
+  margin-top: 3px;
+}
+
+.notification-content .body-image {
+  background-color: transparent;
+  border-radius: 10px;
+  margin-top: 8px;
+}
+
+.notification-content progressbar trough {
+  background: @card_low;
+  border-radius: 6px;
+  min-height: 6px;
+}
+
+.notification-content progressbar progress {
+  background: @accent;
+  border-radius: 6px;
+  min-height: 6px;
+}
+
+/* ---------- Action buttons: big, obvious, full width ---------- */
+.notification-row .notification-background .notification .notification-alt-actions {
+  padding: 2px 4px 4px 4px;
+}
+
+.notification-row .notification-background .notification .notification-action {
+  margin: 3px;
+}
+
+.notification-row .notification-background .notification .notification-action > button {
+  min-height: 38px;
+  padding: 4px 14px;
+  background: @btn;
+  color: @btn_text;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.notification-row .notification-background .notification .notification-action > button:hover {
+  background: @accent;
+  color: @on_primary;
+}
+
+/* ---------- Inline reply ---------- */
+.notification-content .inline-reply {
+  margin-top: 10px;
+}
+
+.notification-content .inline-reply .inline-reply-entry {
+  min-height: 38px;
+  padding: 0 12px;
+  background: @card_low;
+  color: @text;
+  caret-color: @accent;
+  border: 1px solid @outline;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.notification-content .inline-reply .inline-reply-entry:focus-within {
+  border-color: @accent;
+}
+
+.notification-content .inline-reply .inline-reply-button {
+  min-height: 38px;
+  margin-left: 6px;
+  padding: 0 16px;
+  background: @accent;
+  color: @on_primary;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.notification-content .inline-reply .inline-reply-button:disabled {
+  background: @card_low;
+  color: alpha(@text_dim, 0.6);
+}
+
+/* ---------- Close button ---------- */
+.close-button {
+  min-width: 26px;
+  min-height: 26px;
+  margin: 10px 10px 0 0;
+  padding: 0;
+  background: @card_low;
+  color: @text;
+  border: 1px solid @outline_variant;
+  border-radius: 100px;
+}
+
+.close-button:hover {
+  background: @error_container;
+  color: @on_error_container;
+}
+
+/* ---------- Groups ---------- */
+.notification-group .notification-group-headers {
+  color: @text_dim;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 12px;
+}
+
+.notification-group .notification-group-buttons button {
+  background: @card_low;
+  color: @text;
+  border-radius: 8px;
+  min-height: 26px;
+  padding: 0 8px;
+}
+
+.notification-group .notification-group-buttons button:hover {
+  background: @card_hi;
+}
+
+.notification-group:focus {
+  background: transparent;
+}
+
+/* ---------- Control center ---------- */
+.control-center {
+  background: alpha(@surface, 0.96);
+  color: @text;
+  border: 1px solid @outline_variant;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+}
+
+.control-center .control-center-list-placeholder {
+  color: @text_dim;
+  font-size: 15px;
+}
+
+.widget-title {
+  margin: 10px 14px 4px 14px;
+  color: @text;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.widget-title > button {
+  background: @btn;
+  color: @btn_text;
+  border: none;
+  border-radius: 10px;
+  padding: 4px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.widget-title > button:hover {
+  background: @error_container;
+  color: @on_error_container;
+}
+
+.widget-dnd {
+  margin: 6px 14px;
+  color: @text;
+  font-size: 14px;
+}
+
+.widget-dnd > switch {
+  background: @card_low;
+  border-radius: 100px;
+}
+
+.widget-dnd > switch:checked {
+  background: @accent;
+}
+
+.widget-dnd > switch slider {
+  background: @text;
+  border-radius: 100px;
+}
+
+.widget-buttons-grid {
+  margin: 6px 10px;
+  padding: 4px;
+}
+
+.widget-buttons-grid button {
+  min-height: 44px;
+  margin: 4px;
+  background: @card;
+  color: @text;
+  border: 1px solid @outline_variant;
+  border-radius: 12px;
+  font-size: 18px;
+}
+
+.widget-buttons-grid button:hover {
+  background: @card_hi;
+}
+
+.widget-buttons-grid button.toggle:checked {
+  background: @accent;
+  color: @on_primary;
+  border-color: @accent;
+}

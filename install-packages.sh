@@ -130,6 +130,9 @@ APPS_PKGS=(
     nautilus-python
     chromium
     flatpak
+    kdeconnect
+    sshfs
+    kde-cli-tools
 )
 
 # -------------------------------------------------
@@ -142,6 +145,9 @@ THEME_PKGS=(
     qt6-wayland
     qt6-5compat
     qt6ct
+    breeze
+    breeze-icons
+    qqc2-desktop-style
     matugen
     adwaita-icon-theme
     adwaita-cursors
